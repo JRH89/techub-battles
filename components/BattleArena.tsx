@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Play, Pause, RotateCcw, FastForward } from 'lucide-react';
 import { simulateBattle } from '@/lib/battle-engine';
 import { saveBattleResult } from '@/lib/battle-storage';
 import type { Fighter, GameData, BattleEvent, BattleResult } from '@/lib/types';
 import FighterCard from './FighterCard';
 import BattleLog from './BattleLog';
-import BattleControls from './BattleControls';
 
 interface BattleArenaProps {
   challenger: Fighter;
@@ -213,7 +213,7 @@ export default function BattleArena({
 
   if (!battleResult) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen h-full bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
           <p className="text-lg text-slate-600 dark:text-slate-400">
@@ -230,33 +230,81 @@ export default function BattleArena({
   const battleComplete = currentEventIndex >= battleResult.battle_log.length - 1;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 py-8 px-4">
+    <div className="min-h-screen h-full bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 py-8 px-4">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center"
-        >
-          <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 mb-2">
-            ⚔️ Battle Arena ⚔️
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            Turn {Math.min(currentEventIndex, battleResult.total_turns)} of{' '}
-            {battleResult.total_turns}
-          </p>
-        </motion.div>
+        {/* Controls with Header in Center */}
+        <div className="rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-xl">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            {/* Play/Pause/Reset */}
+            <div className="flex items-center gap-3">
+              {!isPlaying ? (
+                <button
+                  onClick={handlePlay}
+                  disabled={!battleResult}
+                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 px-6 py-3 text-white font-bold shadow-lg hover:from-emerald-700 hover:to-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Play size={20} />
+                  <span>Play Battle</span>
+                </button>
+              ) : (
+                <button
+                  onClick={handlePause}
+                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-3 text-white font-bold shadow-lg hover:from-amber-700 hover:to-orange-700 transition-all"
+                >
+                  <Pause size={20} />
+                  <span>Pause</span>
+                </button>
+              )}
 
-        {/* Controls */}
-        <BattleControls
-          isPlaying={isPlaying}
-          onPlay={handlePlay}
-          onPause={handlePause}
-          onReset={handleReset}
-          speed={speed}
-          onSpeedChange={handleSpeedChange}
-          disabled={!battleResult}
-        />
+              <button
+                onClick={handleReset}
+                disabled={!battleResult}
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-3 text-white font-bold shadow-lg hover:from-slate-700 hover:to-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <RotateCcw size={20} />
+                <span>Reset</span>
+              </button>
+            </div>
+
+            {/* Header - Center */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center flex-1 min-w-[200px]"
+            >
+              <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 mb-1">
+                ⚔️ Battle Arena ⚔️
+              </h1>
+              <p className="text-slate-600 dark:text-slate-400 text-sm">
+                Turn {Math.min(currentEventIndex, battleResult.total_turns)} of{' '}
+                {battleResult.total_turns}
+              </p>
+            </motion.div>
+
+            {/* Speed Control */}
+            <div className="flex items-center gap-3">
+              <FastForward size={20} className="text-slate-600 dark:text-slate-400" />
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                Speed:
+              </label>
+              <div className="flex items-center gap-2">
+                {[0.5, 1, 2, 4].map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => handleSpeedChange(s)}
+                    className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                      speed === s
+                        ? 'bg-blue-600 text-white shadow-lg'
+                        : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'
+                    }`}
+                  >
+                    {s}x
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Battle Arena */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -76,7 +76,7 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950">
+      <div className="flex items-center justify-center py-12 min-h-screen h-full">
         <div className="text-center">
           <Loader className="animate-spin h-16 w-16 text-blue-600 mx-auto mb-4" />
           <p className="text-lg text-slate-600 dark:text-slate-400">
@@ -88,7 +88,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 py-12 px-4">
+    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 py-12 px-4 min-h-screen h-full">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
@@ -117,12 +117,14 @@ export default function Home() {
           <div className="space-y-6">
             {/* Challenger */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label htmlFor="challenger-select" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Challenger
               </label>
               <select
+                id="challenger-select"
                 value={challengerId}
                 onChange={(e) => setChallengerId(e.target.value)}
+                aria-label="Select challenger fighter"
                 className="w-full rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-slate-100 focus:border-blue-500 focus:outline-none"
               >
                 <option value="">Select Challenger...</option>
@@ -144,12 +146,14 @@ export default function Home() {
 
             {/* Opponent */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label htmlFor="opponent-select" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Opponent
               </label>
               <select
+                id="opponent-select"
                 value={opponentId}
                 onChange={(e) => setOpponentId(e.target.value)}
+                aria-label="Select opponent fighter"
                 className="w-full rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-slate-100 focus:border-blue-500 focus:outline-none"
               >
                 <option value="">Select Opponent...</option>

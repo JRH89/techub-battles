@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Loader, ArrowLeft } from 'lucide-react';
+import { Loader } from 'lucide-react';
 import BattleArena from '@/components/BattleArena';
 import type { Fighter, GameData } from '@/lib/types';
 
@@ -63,7 +63,7 @@ function BattleContent() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950">
+      <div className="flex min-h-screen h-full items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950">
         <div className="text-center">
           <Loader className="animate-spin h-16 w-16 text-blue-600 mx-auto mb-4" />
           <p className="text-lg text-slate-600 dark:text-slate-400">
@@ -76,7 +76,7 @@ function BattleContent() {
 
   if (error || !challenger || !opponent || !gameData) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 p-4">
+      <div className="flex min-h-screen h-full items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 p-4">
         <div className="text-center">
           <div className="text-6xl mb-4">❌</div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
@@ -89,7 +89,6 @@ function BattleContent() {
             onClick={() => router.push('/')}
             className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-white font-bold hover:bg-blue-700 transition-colors"
           >
-            <ArrowLeft size={20} />
             Back to Home
           </button>
         </div>
@@ -98,24 +97,11 @@ function BattleContent() {
   }
 
   return (
-    <div>
-      {/* Back Button */}
-      <div className="fixed top-4 left-4 z-50">
-        <button
-          onClick={() => router.push('/')}
-          className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 px-4 py-2 text-slate-900 dark:text-slate-100 font-semibold shadow-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-        >
-          <ArrowLeft size={20} />
-          Back
-        </button>
-      </div>
-
-      <BattleArena
-        challenger={challenger}
-        opponent={opponent}
-        gameData={gameData}
-      />
-    </div>
+    <BattleArena
+      challenger={challenger}
+      opponent={opponent}
+      gameData={gameData}
+    />
   );
 }
 

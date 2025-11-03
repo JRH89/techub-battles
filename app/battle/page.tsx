@@ -3,7 +3,6 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Loader, ArrowLeft } from 'lucide-react';
-import techubAPI from '@/lib/techub-api';
 import BattleArena from '@/components/BattleArena';
 import type { Fighter, GameData } from '@/lib/types';
 
@@ -31,10 +30,12 @@ function BattleContent() {
         return;
       }
 
-      // Load game data and fighters
+      // Load from Firestore (not Rails!)
+      const { getFightersFromFirestore, getGameDataFromFirestore } = await import('@/lib/fighter-sync');
+      
       const [gameDataResponse, fighters] = await Promise.all([
-        techubAPI.getGameData(),
-        techubAPI.getBattleReadyProfiles(),
+        getGameDataFromFirestore(),
+        getFightersFromFirestore(),
       ]);
 
       const challengerData = fighters.find(

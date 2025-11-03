@@ -14,7 +14,13 @@ export interface ProfileCard {
   defense: number;
   speed: number;
   vibe?: string;
-  special_move?: string; // Rails has singular special_move
+  vibe_description?: string;
+  special_move?: string;
+  special_move_description?: string;
+  buff?: string;
+  buff_description?: string;
+  weakness?: string;
+  weakness_description?: string;
 }
 
 export interface Fighter {

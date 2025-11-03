@@ -12,6 +12,8 @@ interface FighterCardProps {
   isWinner?: boolean;
   side: 'left' | 'right';
   floatingMessage?: string;
+  specialMoveCharge?: number; // 0-3, charges every turn, triggers at 3
+  isUsingSpecialMove?: boolean; // True when special move is being used
 }
 
 export default function FighterCard({
@@ -21,15 +23,28 @@ export default function FighterCard({
   isWinner = false,
   side,
   floatingMessage,
+  specialMoveCharge = 0,
+  isUsingSpecialMove = false,
 }: FighterCardProps) {
   const borderColor = side === 'left' ? 'border-blue-500' : 'border-red-500';
   const ringColor = side === 'left' ? 'ring-blue-500' : 'ring-red-500';
+  const chargePercentage = (specialMoveCharge / 3) * 100;
 
   return (
     <motion.div
       initial={{ opacity: 0, x: side === 'left' ? -50 : 50 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5 }}
+      animate={{ 
+        opacity: 1, 
+        x: 0,
+        scale: isUsingSpecialMove ? [1, 1.05, 1] : 1,
+        boxShadow: isUsingSpecialMove 
+          ? ['0 0 0 0 rgba(99, 102, 241, 0)', '0 0 40px 10px rgba(99, 102, 241, 0.8)', '0 0 0 0 rgba(99, 102, 241, 0)']
+          : undefined
+      }}
+      transition={{ 
+        duration: isUsingSpecialMove ? 0.8 : 0.5,
+        scale: { repeat: isUsingSpecialMove ? 1 : 0 }
+      }}
       className={`rounded-2xl border-4 ${borderColor} bg-white dark:bg-slate-900 p-6 shadow-2xl relative`}
     >
       {/* Floating Battle Message */}
@@ -141,12 +156,65 @@ export default function FighterCard({
           </div>
         </div>
 
-        {/* Vibe */}
-        {fighter.card.vibe && (
-          <div className="text-xs text-center text-slate-600 dark:text-slate-400 italic">
-            "{fighter.card.vibe}"
+        {/* Player Traits - 2x2 Grid */}
+        <div className="w-full grid grid-cols-2 gap-2 pt-2">
+          {/* Buff */}
+          <div className="border border-green-200 dark:border-green-800 rounded-lg p-2">
+            <div className="text-xs font-bold text-green-700 dark:text-green-400 mb-1 uppercase tracking-wide">
+              Buff
+            </div>
+            <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+              {fighter.card.buff || "—"}
+            </p>
           </div>
-        )}
+
+          {/* Weakness */}
+          <div className="border border-red-200 dark:border-red-800 rounded-lg p-2">
+            <div className="text-xs font-bold text-red-700 dark:text-red-400 mb-1 uppercase tracking-wide">
+              Weakness
+            </div>
+            <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+              {fighter.card.weakness || "—"}
+            </p>
+          </div>
+
+          {/* Vibe */}
+          <div className="border border-teal-200 dark:border-teal-800 rounded-lg p-2">
+            <div className="text-xs font-bold text-teal-700 dark:text-teal-400 mb-1 uppercase tracking-wide">
+              Vibe
+            </div>
+            <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+              {fighter.card.vibe || "—"}
+            </p>
+          </div>
+
+          {/* Special Move */}
+          <div className="border-2 border-indigo-200 dark:border-indigo-800 bg-gradient-to-br from-indigo-50 to-teal-50 dark:from-indigo-950/20 dark:to-teal-950/20 rounded-lg p-2 relative overflow-hidden">
+            <div className="text-xs font-bold text-indigo-700 dark:text-indigo-400 mb-1 uppercase tracking-wide">
+              Special
+            </div>
+            <p className="text-xs font-bold text-indigo-900 dark:text-indigo-100 mb-1">
+              {fighter.card.special_move || "—"}
+            </p>
+            {/* Charge Bar */}
+            <div className="h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <motion.div 
+                className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
+                initial={{ width: 0 }}
+                animate={{ 
+                  width: `${chargePercentage}%`,
+                  boxShadow: chargePercentage === 100 
+                    ? ['0 0 0 0 rgba(99, 102, 241, 0.7)', '0 0 10px 2px rgba(99, 102, 241, 0.9)', '0 0 0 0 rgba(99, 102, 241, 0.7)']
+                    : undefined
+                }}
+                transition={{ 
+                  width: { duration: 0.3 },
+                  boxShadow: { duration: 0.5, repeat: Infinity }
+                }}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </motion.div>
   );

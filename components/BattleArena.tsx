@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import type { Fighter, GameData, BattleEvent, BattleResult } from '@/lib/types';
 import { simulateBattle } from '@/lib/battle-engine';
+import { saveBattleResult } from '@/lib/battle-storage';
+import type { Fighter, GameData, BattleEvent, BattleResult } from '@/lib/types';
 import FighterCard from './FighterCard';
 import BattleLog from './BattleLog';
 import BattleControls from './BattleControls';
@@ -22,11 +23,15 @@ export default function BattleArena({
   const [battleResult, setBattleResult] = useState<BattleResult | null>(null);
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState(1);
+  const [speed, setSpeed] = useState(0.5); // Start at 0.5x speed (slower, easier to read)
   const [challengerHP, setChallengerHP] = useState(100);
   const [opponentHP, setOpponentHP] = useState(100);
   const [challengerMessage, setChallengerMessage] = useState<string>('');
   const [opponentMessage, setOpponentMessage] = useState<string>('');
+  const [challengerCharge, setChallengerCharge] = useState(0);
+  const [opponentCharge, setOpponentCharge] = useState(0);
+  const [challengerUsingSpecial, setChallengerUsingSpecial] = useState(false);
+  const [opponentUsingSpecial, setOpponentUsingSpecial] = useState(false);
 
   // Simulate battle on mount
   useEffect(() => {
@@ -46,13 +51,46 @@ export default function BattleArena({
       setCurrentEventIndex((prev) => {
         if (prev >= battleResult.battle_log.length - 1) {
           setIsPlaying(false);
+          
+          // Clear messages when battle ends
+          setChallengerMessage('');
+          setOpponentMessage('');
+          
+          // Save battle result to Firebase when complete
+          saveBattleResult(battleResult, challenger, opponent).then((battleId) => {
+            if (battleId) {
+              console.log('Battle saved with ID:', battleId);
+            }
+          });
+          
           return prev;
         }
 
         // Update HP and messages based on current event
         const nextEvent = battleResult.battle_log[prev + 1];
         
-        if (nextEvent.type === 'attack' && nextEvent.damage) {
+        if ((nextEvent.type === 'attack' || nextEvent.type === 'special_move') && nextEvent.damage) {
+          // Update charge bars (increment every turn, reset on special move)
+          if (nextEvent.type === 'special_move') {
+            // Reset charge and trigger special move animation
+            if (nextEvent.attacker === challenger.profile.login) {
+              setChallengerCharge(0);
+              setChallengerUsingSpecial(true);
+              setTimeout(() => setChallengerUsingSpecial(false), 800);
+            } else {
+              setOpponentCharge(0);
+              setOpponentUsingSpecial(true);
+              setTimeout(() => setOpponentUsingSpecial(false), 800);
+            }
+          } else {
+            // Increment charge for normal attacks
+            if (nextEvent.attacker === challenger.profile.login) {
+              setChallengerCharge(prev => Math.min(prev + 1, 3));
+            } else {
+              setOpponentCharge(prev => Math.min(prev + 1, 3));
+            }
+          }
+          
           // Update defender's HP
           if (nextEvent.defender === challenger.profile.login) {
             setChallengerHP(nextEvent.defender_hp || 0);
@@ -61,7 +99,14 @@ export default function BattleArena({
           }
           
           // Build detailed attack message
-          let attackMsg = `⚔️ ${nextEvent.damage} damage`;
+          let attackMsg = '';
+          
+          // Check if it's a special move
+          if (nextEvent.type === 'special_move' && nextEvent.special_move) {
+            attackMsg = `✨ ${nextEvent.special_move}! ${nextEvent.damage} damage`;
+          } else {
+            attackMsg = `⚔️ ${nextEvent.damage} damage`;
+          }
           
           // Check for type advantage using multiplier
           if (nextEvent.type_multiplier === 1.5) {
@@ -76,7 +121,7 @@ export default function BattleArena({
             : opponent.card.archetype;
             
           if (attackerArchetype === 'The Magician') {
-            attackMsg += ' ✨';
+            attackMsg += ' 🔮';
           } else if (attackerArchetype === 'The Rebel') {
             attackMsg += ' 🎲';
           } else if (attackerArchetype === 'The Lover') {
@@ -207,50 +252,53 @@ export default function BattleArena({
             maxHp={100}
             isWinner={battleComplete && isChallengerWinner}
             side="left"
+            specialMoveCharge={challengerCharge}
+            isUsingSpecialMove={challengerUsingSpecial}
           />
 
-          {/* VS Badge with Battle Messages */}
+          {/* Battle Center - VS or Turn Info */}
           <div className="flex items-center justify-center relative">
             <div className="flex flex-col items-center gap-4">
-              {/* Challenger's Move (Above VS) */}
+              {/* Challenger's Move (Above center) */}
               {challengerMessage && (
                 <motion.div
                   key={`challenger-${challengerMessage}`}
                   initial={{ opacity: 0, x: -20, scale: 0.8 }}
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  className="rounded-xl bg-blue-500 px-6 py-3 text-white font-bold shadow-xl border-4 border-blue-400 whitespace-nowrap flex items-center gap-2"
+                  className="rounded-xl bg-blue-500 px-6 py-3 text-white font-bold shadow-xl border-4 border-blue-400 whitespace-nowrap flex items-center gap-2 max-w-md text-center"
                 >
                   <span className="text-2xl">←</span>
-                  {challengerMessage}
+                  <span className="text-sm">{challengerMessage}</span>
                 </motion.div>
               )}
 
-              {/* VS Symbol */}
-              <motion.div
-                animate={{
-                  scale: isPlaying ? [1, 1.1, 1] : 1,
-                  rotate: isPlaying ? [0, 5, -5, 0] : 0,
-                }}
-                transition={{
-                  duration: 0.5,
-                  repeat: isPlaying ? Infinity : 0,
-                }}
-                className="rounded-full bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 p-8 text-white shadow-2xl"
-              >
-                <div className="text-4xl font-bold">VS</div>
-              </motion.div>
+              {/* VS Symbol (hide when playing) */}
+              {!isPlaying && (
+                <motion.div
+                  animate={{
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                  }}
+                  className="rounded-full bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 p-8 text-white shadow-2xl"
+                >
+                  <div className="text-4xl font-bold">VS</div>
+                </motion.div>
+              )}
 
-              {/* Opponent's Move (Below VS) */}
+              {/* Opponent's Move (Below center) */}
               {opponentMessage && (
                 <motion.div
                   key={`opponent-${opponentMessage}`}
                   initial={{ opacity: 0, x: 20, scale: 0.8 }}
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  className="rounded-xl bg-red-500 px-6 py-3 text-white font-bold shadow-xl border-4 border-red-400 whitespace-nowrap flex items-center gap-2"
+                  className="rounded-xl bg-red-500 px-6 py-3 text-white font-bold shadow-xl border-4 border-red-400 whitespace-nowrap flex items-center gap-2 max-w-md text-center"
                 >
-                  {opponentMessage}
+                  <span className="text-sm">{opponentMessage}</span>
                   <span className="text-2xl">→</span>
                 </motion.div>
               )}
@@ -262,8 +310,10 @@ export default function BattleArena({
             fighter={opponent}
             hp={opponentHP}
             maxHp={100}
-            isWinner={battleComplete && isOpponentWinner}
+            isWinner={battleComplete && !isChallengerWinner}
             side="right"
+            specialMoveCharge={opponentCharge}
+            isUsingSpecialMove={opponentUsingSpecial}
           />
         </div>
 

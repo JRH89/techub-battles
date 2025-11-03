@@ -20,6 +20,12 @@ export class BattleEngine {
     this.challenger = challenger;
     this.opponent = opponent;
 
+    console.log('=== BATTLE ENGINE INIT ===');
+    console.log('Game data:', gameData);
+    console.log('Archetype abilities:', gameData?.archetype_abilities);
+    console.log('Challenger special move:', challenger.card.special_move);
+    console.log('Opponent special move:', opponent.card.special_move);
+
     // Initialize stats with spirit animal modifiers
     this.challengerStats = this.calculateModifiedStats(challenger);
     this.opponentStats = this.calculateModifiedStats(opponent);
@@ -147,7 +153,22 @@ export class BattleEngine {
   }
 
   /**
-   * Execute a single attack
+   * Get special move bonus for an archetype
+   * Returns the first special move's damage bonus from the archetype
+   */
+  private getSpecialMoveBonus(archetype: string): number {
+    const abilities = this.gameData.archetype_abilities[archetype];
+    if (!abilities || !abilities.special_moves || abilities.special_moves.length === 0) {
+      return 1.0; // No bonus
+    }
+    
+    // Use the first special move's damage bonus
+    const firstMove = abilities.special_moves[0];
+    return firstMove.damage_bonus || 1.0;
+  }
+
+  /**
+   * Execute a single attack (normal or special move)
    */
   private executeAttack(
     attacker: 'challenger' | 'opponent',
@@ -168,6 +189,16 @@ export class BattleEngine {
         defender: defenderFighter.profile.login,
       });
       return;
+    }
+
+    // Check if using special move (every 3 turns after turn 2)
+    const useSpecialMove = this.turn > 1 && this.turn % 3 === 0;
+    const specialMoveName = attackerFighter.card.special_move; // Custom player name
+    let specialMoveBonus = 1.0;
+    
+    if (useSpecialMove) {
+      // Get damage bonus from archetype (not from move name)
+      specialMoveBonus = this.getSpecialMoveBonus(attackerFighter.card.archetype);
     }
 
     // Calculate type advantage
@@ -194,23 +225,39 @@ export class BattleEngine {
       defenderFighter.card.archetype
     );
 
-    damage = damage * attackerBonus * defenderBonus;
+    // Apply special move bonus
+    damage = damage * attackerBonus * defenderBonus * specialMoveBonus;
 
     // Apply damage
     defenderStats.hp = Math.max(0, defenderStats.hp - damage);
 
     // Log attack
-    this.battleLog.push({
-      type: 'attack',
-      turn: this.turn,
-      message: `${attackerFighter.profile.login} attacks ${defenderFighter.profile.login}`,
-      attacker: attackerFighter.profile.login,
-      defender: defenderFighter.profile.login,
-      damage: Math.round(damage * 10) / 10,
-      attacker_hp: attackerStats.hp,
-      defender_hp: defenderStats.hp,
-      type_multiplier: typeMultiplier, // Add type advantage info
-    });
+    if (useSpecialMove && specialMoveName) {
+      this.battleLog.push({
+        type: 'special_move',
+        turn: this.turn,
+        message: `${attackerFighter.profile.login} uses ${specialMoveName}!`,
+        attacker: attackerFighter.profile.login,
+        defender: defenderFighter.profile.login,
+        damage: Math.round(damage * 10) / 10,
+        attacker_hp: attackerStats.hp,
+        defender_hp: defenderStats.hp,
+        type_multiplier: typeMultiplier,
+        special_move: specialMoveName,
+      });
+    } else {
+      this.battleLog.push({
+        type: 'attack',
+        turn: this.turn,
+        message: `${attackerFighter.profile.login} attacks ${defenderFighter.profile.login}`,
+        attacker: attackerFighter.profile.login,
+        defender: defenderFighter.profile.login,
+        damage: Math.round(damage * 10) / 10,
+        attacker_hp: attackerStats.hp,
+        defender_hp: defenderStats.hp,
+        type_multiplier: typeMultiplier,
+      });
+    }
 
     // Check for KO
     if (defenderStats.hp <= 0) {

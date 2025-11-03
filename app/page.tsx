@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Swords, Loader } from 'lucide-react';
-import techubAPI from '@/lib/techub-api';
 import type { Fighter, GameData } from '@/lib/types';
 
 export default function Home() {
@@ -16,29 +15,52 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    async function loadData() {
+      try {
+        setLoading(true);
+        
+        const { 
+          shouldSyncFighters, 
+          getFightersFromFirestore, 
+          syncFightersFromRails,
+          getGameDataFromFirestore,
+          syncGameDataFromRails
+        } = await import('@/lib/fighter-sync');
+        
+        // Check if we need to sync from Rails
+        const needsSync = await shouldSyncFighters();
+        
+        if (needsSync) {
+          console.log('Syncing data from Rails (first time or >24hrs old)...');
+          // Sync both fighters and game data
+          await Promise.all([
+            syncFightersFromRails(),
+            syncGameDataFromRails()
+          ]);
+        }
+        
+        // Get everything from Firestore (fast, no Rails calls)
+        const [profilesData, gameDataResponse] = await Promise.all([
+          getFightersFromFirestore(),
+          getGameDataFromFirestore()
+        ]);
+        
+        setFighters(profilesData);
+        setGameData(gameDataResponse);
+        
+        if (profilesData.length >= 2) {
+          setChallengerId(profilesData[0].profile.id.toString());
+          setOpponentId(profilesData[1].profile.id.toString());
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load data');
+      } finally {
+        setLoading(false);
+      }
+    }
+
     loadData();
   }, []);
-
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      const [fightersData, gameDataResponse] = await Promise.all([
-        techubAPI.getBattleReadyProfiles(),
-        techubAPI.getGameData(),
-      ]);
-      setFighters(fightersData);
-      setGameData(gameDataResponse);
-      if (fightersData.length >= 2) {
-        setChallengerId(fightersData[0].profile.id.toString());
-        setOpponentId(fightersData[1].profile.id.toString());
-      }
-    } catch (err) {
-      setError('Failed to load data. Make sure Rails server is running!');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleStartBattle = () => {
     if (!challengerId || !opponentId) {

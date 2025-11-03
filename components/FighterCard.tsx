@@ -109,19 +109,6 @@ export default function FighterCard({
           </div>
         </div>
 
-        {/* Winner Badge */}
-        {isWinner && (
-          <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ delay: 0.5, type: 'spring', bounce: 0.6 }}
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 px-6 py-2 text-white font-bold shadow-lg"
-          >
-            <span>🏆</span>
-            <span>WINNER</span>
-          </motion.div>
-        )}
-
         {/* HP Bar */}
         <HPBar hp={hp} maxHp={maxHp} label="HP" className="w-full" />
 
@@ -130,7 +117,7 @@ export default function FighterCard({
           <div className="text-center">
             <div className="flex items-center justify-center gap-1 text-red-600 dark:text-red-400 mb-1">
               <Swords size={16} />
-              <span className="text-xs font-medium">ATK</span>
+              <span className="text-xs font-bold">ATK</span>
             </div>
             <div className="text-xl font-bold text-slate-900 dark:text-slate-100">
               {fighter.card.attack}
@@ -139,7 +126,7 @@ export default function FighterCard({
           <div className="text-center">
             <div className="flex items-center justify-center gap-1 text-blue-600 dark:text-blue-400 mb-1">
               <Shield size={16} />
-              <span className="text-xs font-medium">DEF</span>
+              <span className="text-xs font-bold">DEF</span>
             </div>
             <div className="text-xl font-bold text-slate-900 dark:text-slate-100">
               {fighter.card.defense}
@@ -148,7 +135,7 @@ export default function FighterCard({
           <div className="text-center">
             <div className="flex items-center justify-center gap-1 text-yellow-600 dark:text-yellow-400 mb-1">
               <Zap size={16} />
-              <span className="text-xs font-medium">SPD</span>
+              <span className="text-xs font-bold">SPD</span>
             </div>
             <div className="text-xl font-bold text-slate-900 dark:text-slate-100">
               {fighter.card.speed}

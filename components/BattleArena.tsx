@@ -28,6 +28,7 @@ export default function BattleArena({
   const [opponentHP, setOpponentHP] = useState(100);
   const [challengerMessage, setChallengerMessage] = useState<string>('');
   const [opponentMessage, setOpponentMessage] = useState<string>('');
+  const [centerMessage, setCenterMessage] = useState<string>(''); // For battle start, speed check, etc.
   const [challengerCharge, setChallengerCharge] = useState(0);
   const [opponentCharge, setOpponentCharge] = useState(0);
   const [challengerUsingSpecial, setChallengerUsingSpecial] = useState(false);
@@ -69,7 +70,19 @@ export default function BattleArena({
         // Update HP and messages based on current event
         const nextEvent = battleResult.battle_log[prev + 1];
         
-        if ((nextEvent.type === 'attack' || nextEvent.type === 'special_move') && nextEvent.damage) {
+        // Handle different event types
+        if (nextEvent.type === 'battle_start') {
+          setCenterMessage('⚔️ Battle begins! ⚔️');
+          setTimeout(() => setCenterMessage(''), 1500);
+        } else if (nextEvent.type === 'speed_check') {
+          setCenterMessage(nextEvent.message || '');
+          setTimeout(() => setCenterMessage(''), 2000);
+        } else if (nextEvent.type === 'type_advantage') {
+          setCenterMessage(nextEvent.message || '');
+          setTimeout(() => setCenterMessage(''), 1500);
+        } else if (nextEvent.type === 'knockout') {
+          setCenterMessage(`💥 ${nextEvent.message} 💥`);
+        } else if ((nextEvent.type === 'attack' || nextEvent.type === 'special_move') && nextEvent.damage) {
           // Update charge bars (increment every turn, reset on special move)
           if (nextEvent.type === 'special_move') {
             // Reset charge and trigger special move animation
@@ -98,7 +111,7 @@ export default function BattleArena({
             setOpponentHP(nextEvent.defender_hp || 0);
           }
           
-          // Build detailed attack message
+          // Build detailed attack message with attacker and defender
           let attackMsg = '';
           
           // Check if it's a special move
@@ -136,9 +149,11 @@ export default function BattleArena({
           if (nextEvent.attacker === challenger.profile.login) {
             setChallengerMessage(attackMsg);
             setOpponentMessage(''); // Clear opponent's old message
+            setCenterMessage(`@${nextEvent.attacker} → @${nextEvent.defender}`);
           } else if (nextEvent.attacker === opponent.profile.login) {
             setOpponentMessage(attackMsg);
             setChallengerMessage(''); // Clear challenger's old message
+            setCenterMessage(`@${nextEvent.attacker} → @${nextEvent.defender}`);
           }
         } else if (nextEvent.type === 'passive_trigger') {
           // Show passive trigger message
@@ -273,8 +288,51 @@ export default function BattleArena({
                 </motion.div>
               )}
 
-              {/* VS Symbol (hide when playing) */}
-              {!isPlaying && (
+              {/* Winner Badge (center, above VS) */}
+              {battleComplete && (
+                <motion.div
+                  initial={{ scale: 0, rotate: -180, y: -50 }}
+                  animate={{ 
+                    scale: 1, 
+                    rotate: 0,
+                    y: 0,
+                    boxShadow: [
+                      '0 0 20px 5px rgba(251, 191, 36, 0.4)',
+                      '0 0 30px 8px rgba(251, 191, 36, 0.6)',
+                      '0 0 20px 5px rgba(251, 191, 36, 0.4)'
+                    ]
+                  }}
+                  transition={{ 
+                    delay: 0.5, 
+                    type: 'spring', 
+                    bounce: 0.4,
+                    boxShadow: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
+                  }}
+                  className="inline-flex flex-col items-center gap-2 rounded-2xl bg-gradient-to-r from-yellow-400 via-orange-500 to-yellow-400 px-8 py-4 text-white font-bold shadow-2xl border-4 border-yellow-300 mb-4"
+                >
+                  <span className="text-4xl">🏆</span>
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs uppercase tracking-wider opacity-90">Winner</span>
+                    <span className="text-xl font-black">@{isChallengerWinner ? challenger.profile.login : opponent.profile.login}</span>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Center Message (battle events) */}
+              {centerMessage && isPlaying && (
+                <motion.div
+                  key={centerMessage}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="rounded-xl bg-purple-600 px-6 py-3 text-white font-bold shadow-xl border-4 border-purple-400 whitespace-nowrap text-center"
+                >
+                  {centerMessage}
+                </motion.div>
+              )}
+
+              {/* VS Symbol (only show before battle starts) */}
+              {!isPlaying && !battleComplete && (
                 <motion.div
                   animate={{
                     scale: [1, 1.1, 1],

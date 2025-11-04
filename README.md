@@ -1,5 +1,7 @@
 # 🎮 TecHub Battles
 
+<img width="3784" height="1739" alt="image" src="https://github.com/user-attachments/assets/50fc019d-90cc-43a2-b56e-f1fab9d3a059" />
+
 A Next.js battle viewer for TecHub GitHub developer cards with **100% client-side simulation** for zero server costs!
 
 ## Features

@@ -86,10 +86,7 @@ export function createMetadata({
       },
     },
     icons: {
-      icon: [
-        { url: '/favicon.svg', type: 'image/svg+xml' },
-        { url: '/favicon.ico', sizes: 'any' },
-      ],
+      icon: '/favicon.png',
       apple: '/apple-touch-icon.png',
     },
   };

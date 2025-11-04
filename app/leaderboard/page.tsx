@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { Trophy, Medal, Award } from 'lucide-react';
+import Link from 'next/link';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 interface LeaderboardEntry {
   login: string;
@@ -15,11 +18,60 @@ export default function LeaderboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // TODO: Load leaderboard from Firestore
-    // For now, placeholder data
-    setLeaderboard([]);
-    setLoading(false);
+    loadLeaderboard();
   }, []);
+
+  const loadLeaderboard = async () => {
+    try {
+      const battlesRef = collection(db, 'battles');
+      const snapshot = await getDocs(battlesRef);
+      
+      // Aggregate stats by player
+      const stats: Record<string, { wins: number; losses: number }> = {};
+      
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        const winnerLogin = data.winner?.login;
+        const loserLogin = data.loser?.login;
+        
+        if (winnerLogin) {
+          if (!stats[winnerLogin]) {
+            stats[winnerLogin] = { wins: 0, losses: 0 };
+          }
+          stats[winnerLogin].wins++;
+        }
+        
+        if (loserLogin) {
+          if (!stats[loserLogin]) {
+            stats[loserLogin] = { wins: 0, losses: 0 };
+          }
+          stats[loserLogin].losses++;
+        }
+      });
+      
+      // Convert to leaderboard entries and sort
+      const entries: LeaderboardEntry[] = Object.entries(stats)
+        .map(([login, data]) => ({
+          login,
+          wins: data.wins,
+          losses: data.losses,
+          winRate: data.wins / (data.wins + data.losses),
+        }))
+        .sort((a, b) => {
+          // Sort by wins first, then by win rate
+          if (b.wins !== a.wins) {
+            return b.wins - a.wins;
+          }
+          return b.winRate - a.winRate;
+        });
+      
+      setLeaderboard(entries);
+    } catch (error) {
+      console.error('Error loading leaderboard:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 py-12 min-h-screen h-full">
@@ -82,9 +134,12 @@ export default function LeaderboardPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-semibold text-slate-900 dark:text-slate-100">
+                      <Link 
+                        href={`/player/${entry.login}`}
+                        className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                      >
                         @{entry.login}
-                      </span>
+                      </Link>
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span className="text-green-600 dark:text-green-400 font-bold">

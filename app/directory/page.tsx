@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Users, Search } from 'lucide-react';
+import Link from 'next/link';
 import type { Fighter } from '@/lib/types';
 import { getFightersFromFirestore } from '@/lib/fighter-sync';
 
@@ -90,9 +91,10 @@ export default function DirectoryPage() {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredFighters.map((fighter) => (
-                <div
+                <Link
                   key={fighter.profile.id}
-                  className="bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-6 hover:border-blue-500 dark:hover:border-blue-500 transition shadow-lg hover:shadow-xl"
+                  href={`/player/${fighter.profile.login}`}
+                  className="bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-6 hover:border-blue-500 dark:hover:border-blue-500 transition shadow-lg hover:shadow-xl cursor-pointer"
                 >
                   {/* Avatar */}
                   <div className="flex justify-center mb-4">
@@ -142,7 +144,7 @@ export default function DirectoryPage() {
                       <div className="text-slate-900 dark:text-slate-100 font-bold">{fighter.card.speed}</div>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </>

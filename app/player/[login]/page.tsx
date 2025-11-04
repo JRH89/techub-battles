@@ -192,7 +192,7 @@ export default function PlayerProfilePage() {
                   </span>
                 </div>
                 <a
-                  href={`https://techub.life/@${fighter.profile.login}`}
+                  href={`https://techub.life/profiles/${fighter.profile.login}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-white text-sm font-bold hover:bg-blue-700 transition"

@@ -9,6 +9,7 @@ import { db } from '@/lib/firebase';
 import { getFightersFromFirestore } from '@/lib/fighter-sync';
 import type { Fighter } from '@/lib/types';
 import type { Metadata } from 'next';
+import { generatePersonSchema, generateBreadcrumbSchema, siteConfig } from '@/lib/metadata';
 
 interface BattleRecord {
   id: string;
@@ -42,6 +43,43 @@ export default function PlayerProfilePage() {
   useEffect(() => {
     loadPlayerData();
   }, [login]);
+
+  // Dynamically update favicon with player's profile picture
+  useEffect(() => {
+    if (fighter) {
+      const avatarUrl = fighter.profile.avatar_url || `https://github.com/${fighter.profile.login}.png`;
+      // Add cache-busting query param to force browser to refresh favicon
+      const cacheBustedUrl = `${avatarUrl}?v=${Date.now()}`;
+      
+      // Update all favicon links
+      const updateFavicon = (rel: string) => {
+        let link = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement;
+        if (!link) {
+          link = document.createElement('link');
+          link.rel = rel;
+          document.head.appendChild(link);
+        }
+        link.href = cacheBustedUrl;
+      };
+
+      updateFavicon('icon');
+      updateFavicon('shortcut icon');
+      updateFavicon('apple-touch-icon');
+
+      // Cleanup: restore default favicon when leaving the page
+      return () => {
+        const restoreFavicon = (rel: string) => {
+          const link = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement;
+          if (link) {
+            link.href = '/favicon.png';
+          }
+        };
+        restoreFavicon('icon');
+        restoreFavicon('shortcut icon');
+        restoreFavicon('apple-touch-icon');
+      };
+    }
+  }, [fighter]);
 
   const loadPlayerData = async () => {
     try {
@@ -145,8 +183,35 @@ export default function PlayerProfilePage() {
     );
   }
 
+  // Generate structured data
+  const personSchema = fighter ? generatePersonSchema({
+    login: fighter.profile.login,
+    name: fighter.profile.name,
+    avatarUrl: fighter.profile.avatar_url || `https://github.com/${fighter.profile.login}.png`,
+    profileUrl: `${siteConfig.url}/player/${fighter.profile.login}`,
+  }) : null;
+
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: siteConfig.url },
+    { name: 'Leaderboard', url: `${siteConfig.url}/leaderboard` },
+    { name: `@${login}`, url: `${siteConfig.url}/player/${login}` },
+  ]);
+
   return (
-    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 py-12 min-h-screen h-full">
+    <>
+      {/* JSON-LD Structured Data */}
+      {personSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+
+      <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 py-12 min-h-screen h-full">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
         <Link
@@ -313,5 +378,6 @@ export default function PlayerProfilePage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

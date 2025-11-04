@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { createMetadata } from "@/lib/metadata";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,10 +15,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "TecHub Battles - Epic Profile Card Battles",
-  description: "Watch TecHub profiles battle it out with unique stats, archetypes, and special moves!",
-};
+export const metadata: Metadata = createMetadata({
+  title: "TecHub Battles - Epic Developer Profile Battles",
+  description: "Watch TecHub developer profiles battle it out in epic turn-based combat! Unique stats, archetypes, spirit animals, and special moves determine the victor. Join the leaderboard and compete!",
+  path: "/",
+});
 
 export default function RootLayout({
   children,

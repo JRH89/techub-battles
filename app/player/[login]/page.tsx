@@ -8,6 +8,7 @@ import { collection, getDocs, query, where, orderBy, limit } from 'firebase/fire
 import { db } from '@/lib/firebase';
 import { getFightersFromFirestore } from '@/lib/fighter-sync';
 import type { Fighter } from '@/lib/types';
+import type { Metadata } from 'next';
 
 interface BattleRecord {
   id: string;

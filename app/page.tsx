@@ -91,11 +91,11 @@ export default function Home() {
     <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 py-12 px-4 min-h-screen h-full">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 mb-4">
-            ⚔️ TecHub Battles ⚔️
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 mb-3 sm:mb-4 px-2">
+            <span className="hidden sm:inline">⚔️ </span>TecHub Battles<span className="hidden sm:inline"> ⚔️</span>
           </h1>
-          <p className="text-xl text-slate-600 dark:text-slate-400">
+          <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-400 px-4">
             Watch GitHub developer cards battle it out!
           </p>
         </div>

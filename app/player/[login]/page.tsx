@@ -172,11 +172,11 @@ export default function PlayerProfilePage() {
 
             {/* Info */}
             <div className="flex-1 text-center md:text-left">
-              <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h1 className="text-xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-2">
                 @{fighter.profile.login}
               </h1>
               {fighter.profile.name && (
-                <p className="text-xl text-slate-600 dark:text-slate-400 mb-3">
+                <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-3">
                   {fighter.profile.name}
                 </p>
               )}
@@ -205,10 +205,10 @@ export default function PlayerProfilePage() {
 
             {/* Stats Summary */}
             <div className="text-center">
-              <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-orange-600 mb-2">
+              <div className="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-orange-600 mb-2">
                 {stats.wins}
               </div>
-              <div className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+              <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">
                 Total Wins
               </div>
             </div>

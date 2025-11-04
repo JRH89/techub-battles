@@ -45,11 +45,11 @@ export default function DirectoryPage() {
     <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 py-12 min-h-screen h-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-pink-600 mb-4">
-            👥 Fighter Directory 👥
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-pink-600 mb-3 sm:mb-4 px-2">
+            <span className="hidden sm:inline">👥 </span>Fighter Directory<span className="hidden sm:inline"> 👥</span>
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400">
+          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 px-4">
             Browse all battle-ready fighters
           </p>
         </div>

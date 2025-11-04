@@ -366,18 +366,6 @@ export default function BattleArena({
                 </motion.div>
               )}
 
-              {/* Center Message (battle events) */}
-              {centerMessage && isPlaying && (
-                <motion.div
-                  key={centerMessage}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="rounded-xl bg-purple-600 px-6 py-3 text-white font-bold shadow-xl border-4 border-purple-400 whitespace-nowrap text-center"
-                >
-                  {centerMessage}
-                </motion.div>
-              )}
 
               {/* VS Symbol (only show before battle starts) */}
               {!isPlaying && !battleComplete && (

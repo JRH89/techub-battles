@@ -47,7 +47,7 @@ export default function PlayerProfilePage() {
   // Dynamically update favicon with player's profile picture
   useEffect(() => {
     if (fighter) {
-      const avatarUrl = fighter.profile.avatar_url || `https://github.com/${fighter.profile.login}.png`;
+      const avatarUrl = `https://github.com/${fighter.profile.login}.png`;
       // Add cache-busting query param to force browser to refresh favicon
       const cacheBustedUrl = `${avatarUrl}?v=${Date.now()}`;
       
@@ -187,7 +187,7 @@ export default function PlayerProfilePage() {
   const personSchema = fighter ? generatePersonSchema({
     login: fighter.profile.login,
     name: fighter.profile.name,
-    avatarUrl: fighter.profile.avatar_url || `https://github.com/${fighter.profile.login}.png`,
+    avatarUrl: `https://github.com/${fighter.profile.login}.png`,
     profileUrl: `${siteConfig.url}/player/${fighter.profile.login}`,
   }) : null;
 
@@ -227,7 +227,7 @@ export default function PlayerProfilePage() {
           <div className="flex flex-col md:flex-row items-center gap-6">
             {/* Avatar */}
             <img
-              src={fighter.profile.avatar_url || `https://github.com/${fighter.profile.login}.png`}
+              src={`https://github.com/${fighter.profile.login}.png?size=256`}
               alt={fighter.profile.login}
               className="h-32 w-32 rounded-full ring-4 ring-blue-500 shadow-lg"
               onError={(e) => {

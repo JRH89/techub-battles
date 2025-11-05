@@ -34,10 +34,16 @@ export default function Home() {
         if (needsSync) {
           console.log('Syncing data from Rails (first time or >24hrs old)...');
           // Sync both fighters and game data
-          await Promise.all([
+          const [fightersSuccess, gameDataSuccess] = await Promise.all([
             syncFightersFromRails(),
             syncGameDataFromRails()
           ]);
+          
+          // Show warning if sync failed but don't block the app
+          if (!fightersSuccess || !gameDataSuccess) {
+            setSyncWarning('Unable to sync from Rails server. Using cached data from Firestore.');
+            console.warn('Rails sync failed - continuing with Firestore data');
+          }
         }
         
         // Get everything from Firestore (fast, no Rails calls)
@@ -45,6 +51,17 @@ export default function Home() {
           getFightersFromFirestore(),
           getGameDataFromFirestore()
         ]);
+        
+        // Check if we have data in Firestore
+        if (!profilesData || profilesData.length === 0) {
+          setError('No fighters found in database. Please ensure the Rails server is running and data has been synced at least once.');
+          return;
+        }
+        
+        if (!gameDataResponse) {
+          setError('No game data found in database. Please ensure the Rails server is running and data has been synced at least once.');
+          return;
+        }
         
         setFighters(profilesData);
         setGameData(gameDataResponse);
@@ -105,6 +122,13 @@ export default function Home() {
         {error && (
           <div className="mb-6 rounded-xl bg-red-50 border-2 border-red-200 p-4 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300">
             {error}
+          </div>
+        )}
+
+        {/* Warning */}
+        {syncWarning && !error && (
+          <div className="mb-6 rounded-xl bg-yellow-50 border-2 border-yellow-200 p-4 text-yellow-800 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-300">
+            ⚠️ {syncWarning}
           </div>
         )}
 

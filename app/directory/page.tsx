@@ -99,11 +99,11 @@ export default function DirectoryPage() {
                   {/* Avatar */}
                   <div className="flex justify-center mb-4">
                     <img
-                      src={fighter.profile.avatar_url || `https://github.com/${fighter.profile.login}.png`}
+                      src={`https://github.com/${fighter.profile.login}.png?size=160`}
                       alt={fighter.profile.login}
                       className="h-20 w-20 rounded-full ring-4 ring-blue-500 shadow-lg"
                       onError={(e) => {
-                        e.currentTarget.src = `https://github.com/${fighter.profile.login}.png`;
+                        e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fighter.profile.login)}&size=160&background=random`;
                       }}
                     />
                   </div>

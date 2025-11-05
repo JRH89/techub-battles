@@ -66,11 +66,12 @@ export default function FighterCard({
         {/* Avatar */}
         <div className="relative">
           <img
-            src={fighter.profile.avatar_url || `https://github.com/${fighter.profile.login}.png`}
+            src={`https://github.com/${fighter.profile.login}.png?size=200`}
             alt={fighter.profile.login}
             className={`h-24 w-24 rounded-full ring-4 ${ringColor} shadow-lg`}
             onError={(e) => {
-              e.currentTarget.src = `https://github.com/${fighter.profile.login}.png`;
+              // Final fallback to a placeholder if GitHub avatar also fails
+              e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fighter.profile.login)}&size=200&background=random`;
             }}
           />
           {isWinner && (

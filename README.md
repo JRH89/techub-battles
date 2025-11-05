@@ -189,6 +189,42 @@ npm start
 npm run lint
 ```
 
+## Troubleshooting
+
+### "Server unable to be reached" when trying to battle
+
+This error occurs when the Rails API server is not running or unreachable. The app now handles this gracefully:
+
+**Solution 1: Use Cached Data (Recommended for Development)**
+- If you've synced data from Rails at least once, the app will automatically use cached data from Firestore
+- You'll see a warning: "Unable to sync from Rails server. Using cached data from Firestore."
+- Battles will work normally using the cached data
+
+**Solution 2: Start the Rails Server**
+```bash
+cd ../rails/techub
+rails s
+```
+
+**Solution 3: Use Production API**
+Create `.env.local`:
+```bash
+NEXT_PUBLIC_TECHUB_API=https://techub.life/api/v1
+```
+
+**First-Time Setup:**
+- The Rails server must be running for the initial data sync
+- After the first sync, data is cached in Firestore for 24 hours
+- Subsequent visits will use cached data even if Rails is offline
+
+### No fighters found in database
+
+This means Firestore has no cached data and Rails sync failed. To fix:
+
+1. Ensure Rails server is running: `rails s`
+2. Refresh the page to trigger a new sync
+3. Check that your `.env.local` has the correct API URL
+
 ## Links
 
 - **TecHub**: https://techub.life

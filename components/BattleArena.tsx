@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Pause, RotateCcw, FastForward } from 'lucide-react';
+import { Play, Pause, RotateCcw, FastForward, Smartphone } from 'lucide-react';
 import { simulateBattle } from '@/lib/battle-engine';
 import { saveBattleResult } from '@/lib/battle-storage';
 import type { Fighter, GameData, BattleEvent, BattleResult } from '@/lib/types';
@@ -33,6 +33,28 @@ export default function BattleArena({
   const [opponentCharge, setOpponentCharge] = useState(0);
   const [challengerUsingSpecial, setChallengerUsingSpecial] = useState(false);
   const [opponentUsingSpecial, setOpponentUsingSpecial] = useState(false);
+  const [isLandscape, setIsLandscape] = useState(true);
+
+  // Check orientation on mobile
+  useEffect(() => {
+    const checkOrientation = () => {
+      // Only enforce landscape on mobile/tablet (< 1024px width)
+      if (window.innerWidth < 1024) {
+        setIsLandscape(window.innerHeight < window.innerWidth);
+      } else {
+        setIsLandscape(true); // Always show on desktop
+      }
+    };
+
+    checkOrientation();
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', checkOrientation);
+
+    return () => {
+      window.removeEventListener('resize', checkOrientation);
+      window.removeEventListener('orientationchange', checkOrientation);
+    };
+  }, []);
 
   // Simulate battle on mount
   useEffect(() => {
@@ -224,6 +246,36 @@ export default function BattleArena({
     );
   }
 
+  // Show landscape prompt on mobile portrait mode
+  if (!isLandscape) {
+    return (
+      <div className="flex items-center justify-center min-h-screen h-full bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 p-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center max-w-md"
+        >
+          <motion.div
+            animate={{ rotate: [0, -90, -90, 0] }}
+            transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+            className="mb-6"
+          >
+            <Smartphone size={80} className="mx-auto text-blue-600" />
+          </motion.div>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
+            Rotate Your Device
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 mb-2">
+            For the best battle experience, please rotate your device to landscape mode.
+          </p>
+          <p className="text-sm text-slate-500 dark:text-slate-500">
+            The battle arena needs more screen space to display both fighters properly.
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
+
   const visibleEvents = battleResult.battle_log.slice(0, currentEventIndex + 1);
   const isChallengerWinner = battleResult.winner.profile.id === challenger.profile.id;
   const isOpponentWinner = battleResult.winner.profile.id === opponent.profile.id;
@@ -233,25 +285,42 @@ export default function BattleArena({
     <div className="min-h-screen h-full bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 py-8 px-4">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Controls with Header in Center */}
-        <div className="rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-xl">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 sm:p-6 shadow-xl">
+          {/* Header - Top on mobile, center on desktop */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-4"
+          >
+            <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 mb-1">
+              Battle Arena
+            </h1>
+            <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm">
+              Turn {Math.min(currentEventIndex, battleResult.total_turns)} of{' '}
+              {battleResult.total_turns}
+            </p>
+          </motion.div>
+
+          {/* Controls Row - Stacked on mobile, side-by-side on desktop */}
+          <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 sm:gap-4">
             {/* Play/Pause/Reset */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               {!isPlaying ? (
                 <button
                   onClick={handlePlay}
                   disabled={!battleResult}
-                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 px-6 py-3 text-white font-bold shadow-lg hover:from-emerald-700 hover:to-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 px-4 sm:px-6 py-2 sm:py-3 text-white text-sm sm:text-base font-bold shadow-lg hover:from-emerald-700 hover:to-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Play size={20} />
-                  <span>Play Battle</span>
+                  <Play size={18} className="sm:w-5 sm:h-5" />
+                  <span className="hidden xs:inline">Play Battle</span>
+                  <span className="xs:hidden">Play</span>
                 </button>
               ) : (
                 <button
                   onClick={handlePause}
-                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-3 text-white font-bold shadow-lg hover:from-amber-700 hover:to-orange-700 transition-all"
+                  className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-4 sm:px-6 py-2 sm:py-3 text-white text-sm sm:text-base font-bold shadow-lg hover:from-amber-700 hover:to-orange-700 transition-all"
                 >
-                  <Pause size={20} />
+                  <Pause size={18} className="sm:w-5 sm:h-5" />
                   <span>Pause</span>
                 </button>
               )}
@@ -259,40 +328,25 @@ export default function BattleArena({
               <button
                 onClick={handleReset}
                 disabled={!battleResult}
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-3 text-white font-bold shadow-lg hover:from-slate-700 hover:to-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl bg-gradient-to-r from-slate-600 to-slate-700 px-4 sm:px-6 py-2 sm:py-3 text-white text-sm sm:text-base font-bold shadow-lg hover:from-slate-700 hover:to-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <RotateCcw size={20} />
+                <RotateCcw size={18} className="sm:w-5 sm:h-5" />
                 <span>Reset</span>
               </button>
             </div>
 
-            {/* Header - Center */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center flex-1 min-w-[200px]"
-            >
-              <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 mb-1">
-                ⚔️ Battle Arena ⚔️
-              </h1>
-              <p className="text-slate-600 dark:text-slate-400 text-sm">
-                Turn {Math.min(currentEventIndex, battleResult.total_turns)} of{' '}
-                {battleResult.total_turns}
-              </p>
-            </motion.div>
-
             {/* Speed Control */}
-            <div className="flex items-center gap-3">
-              <FastForward size={20} className="text-slate-600 dark:text-slate-400" />
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <FastForward size={16} className="text-slate-600 dark:text-slate-400 sm:w-5 sm:h-5" />
+              <label className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
                 Speed:
               </label>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 {[0.5, 1, 2, 4].map((s) => (
                   <button
                     key={s}
                     onClick={() => handleSpeedChange(s)}
-                    className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                    className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold text-xs sm:text-sm transition-all ${
                       speed === s
                         ? 'bg-blue-600 text-white shadow-lg'
                         : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'
@@ -307,7 +361,7 @@ export default function BattleArena({
         </div>
 
         {/* Battle Arena */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-6">
           {/* Challenger */}
           <FighterCard
             fighter={challenger}
@@ -321,7 +375,7 @@ export default function BattleArena({
 
           {/* Battle Center - VS or Turn Info */}
           <div className="flex items-center justify-center relative">
-            <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-2 sm:gap-3 lg:gap-4">
               {/* Challenger's Move (Above center) */}
               {challengerMessage && (
                 <motion.div
@@ -329,10 +383,10 @@ export default function BattleArena({
                   initial={{ opacity: 0, x: -20, scale: 0.8 }}
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  className="rounded-xl bg-blue-500 px-6 py-3 text-white font-bold shadow-xl border-4 border-blue-400 whitespace-nowrap flex items-center gap-2 max-w-md text-center"
+                  className="rounded-lg sm:rounded-xl bg-blue-500 px-2 py-1 sm:px-4 sm:py-2 lg:px-6 lg:py-3 text-white font-bold shadow-xl border-2 sm:border-4 border-blue-400 flex items-center gap-1 sm:gap-2 max-w-[200px] sm:max-w-md text-center"
                 >
-                  <span className="text-2xl">←</span>
-                  <span className="text-sm">{challengerMessage}</span>
+                  <span className="text-lg sm:text-xl lg:text-2xl">←</span>
+                  <span className="text-[10px] sm:text-xs lg:text-sm truncate">{challengerMessage}</span>
                 </motion.div>
               )}
 
@@ -356,12 +410,12 @@ export default function BattleArena({
                     bounce: 0.4,
                     boxShadow: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
                   }}
-                  className="inline-flex flex-col items-center gap-2 rounded-2xl bg-gradient-to-r from-yellow-400 via-orange-500 to-yellow-400 px-8 py-4 text-white font-bold shadow-2xl border-4 border-yellow-300 mb-4"
+                  className="inline-flex flex-col items-center gap-1 sm:gap-2 rounded-xl sm:rounded-2xl bg-gradient-to-r from-yellow-400 via-orange-500 to-yellow-400 px-4 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-4 text-white font-bold shadow-2xl border-2 sm:border-4 border-yellow-300 mb-2 sm:mb-4"
                 >
-                  <span className="text-4xl">🏆</span>
+                  <span className="text-2xl sm:text-3xl lg:text-4xl">🏆</span>
                   <div className="flex flex-col items-center">
-                    <span className="text-xs uppercase tracking-wider opacity-90">Winner</span>
-                    <span className="text-xl font-black">@{isChallengerWinner ? challenger.profile.login : opponent.profile.login}</span>
+                    <span className="text-[10px] sm:text-xs uppercase tracking-wider opacity-90">Winner</span>
+                    <span className="text-sm sm:text-lg lg:text-xl font-black truncate max-w-[150px] sm:max-w-none">@{isChallengerWinner ? challenger.profile.login : opponent.profile.login}</span>
                   </div>
                 </motion.div>
               )}
@@ -377,9 +431,9 @@ export default function BattleArena({
                     duration: 2,
                     repeat: Infinity,
                   }}
-                  className="rounded-full bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 p-8 text-white shadow-2xl"
+                  className="rounded-full bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 p-4 sm:p-6 lg:p-8 text-white shadow-2xl"
                 >
-                  <div className="text-4xl font-bold">VS</div>
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">VS</div>
                 </motion.div>
               )}
 
@@ -390,10 +444,10 @@ export default function BattleArena({
                   initial={{ opacity: 0, x: 20, scale: 0.8 }}
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  className="rounded-xl bg-red-500 px-6 py-3 text-white font-bold shadow-xl border-4 border-red-400 whitespace-nowrap flex items-center gap-2 max-w-md text-center"
+                  className="rounded-lg sm:rounded-xl bg-red-500 px-2 py-1 sm:px-4 sm:py-2 lg:px-6 lg:py-3 text-white font-bold shadow-xl border-2 sm:border-4 border-red-400 flex items-center gap-1 sm:gap-2 max-w-[200px] sm:max-w-md text-center"
                 >
-                  <span className="text-sm">{opponentMessage}</span>
-                  <span className="text-2xl">→</span>
+                  <span className="text-[10px] sm:text-xs lg:text-sm truncate">{opponentMessage}</span>
+                  <span className="text-lg sm:text-xl lg:text-2xl">→</span>
                 </motion.div>
               )}
             </div>

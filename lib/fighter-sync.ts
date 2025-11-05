@@ -29,13 +29,13 @@ export async function syncGameDataFromRails(): Promise<void> {
 
 /**
  * Sync fighters from Rails to Firestore
- * Call this once per day or when you want to update fighter data
+ * Fetches all battle-ready profiles and updates Firestore
  */
 export async function syncFightersFromRails(): Promise<void> {
   try {
     console.log('Syncing fighters from Rails...');
     
-    // Fetch from Rails
+    // Fetch all battle-ready profiles from Rails
     const fighters = await techubAPI.getBattleReadyProfiles();
     
     // Save each fighter to Firestore
@@ -118,14 +118,8 @@ export async function shouldSyncFighters(): Promise<boolean> {
       return true;
     }
     
-    // Check if last sync was > 24 hours ago
-    const firstDoc = snapshot.docs[0];
-    const lastSynced = firstDoc.data().last_synced?.toDate();
-    
-    if (!lastSynced) return true;
-    
-    const hoursSinceSync = (Date.now() - lastSynced.getTime()) / (1000 * 60 * 60);
-    return hoursSinceSync > 24;
+    // Always sync to get latest data from Rails
+    return true;
     
   } catch (error) {
     console.error('Error checking sync status:', error);

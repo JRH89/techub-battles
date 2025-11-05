@@ -118,8 +118,14 @@ export async function shouldSyncFighters(): Promise<boolean> {
       return true;
     }
     
-    // Always sync to get latest data from Rails
-    return true;
+    // Check if last sync was > 24 hours ago
+    const firstDoc = snapshot.docs[0];
+    const lastSynced = firstDoc.data().last_synced?.toDate();
+    
+    if (!lastSynced) return true;
+    
+    const hoursSinceSync = (Date.now() - lastSynced.getTime()) / (1000 * 60 * 60);
+    return hoursSinceSync > 24;
     
   } catch (error) {
     console.error('Error checking sync status:', error);

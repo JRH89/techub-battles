@@ -39,6 +39,16 @@ export const techubAPI = {
    * Optional: Record battle result to Rails (for leaderboards)
    */
   async recordBattle(challengerId: number, opponentId: number, winnerId: number) {
+    // Skip DB calls in development mode
+    if (process.env.NODE_ENV === 'development') {
+      console.log('DEV MODE: Skipping battle recording to DB', {
+        challengerId,
+        opponentId,
+        winnerId
+      });
+      return { success: true, message: 'Dev mode: Battle not saved to DB' };
+    }
+    
     const response = await api.post('/battles', {
       challenger_id: challengerId,
       opponent_id: opponentId,

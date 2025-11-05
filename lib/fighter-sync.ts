@@ -7,7 +7,7 @@ import { techubAPI } from './techub-api';
  * Sync game data from Rails to Firestore
  * This includes archetypes, type chart, spirit animals, abilities, mechanics
  */
-export async function syncGameDataFromRails(): Promise<void> {
+export async function syncGameDataFromRails(): Promise<boolean> {
   try {
     console.log('Syncing game data from Rails...');
     
@@ -21,9 +21,14 @@ export async function syncGameDataFromRails(): Promise<void> {
     });
     
     console.log('Game data synced to Firestore');
+    return true;
   } catch (error) {
-    console.error('Error syncing game data:', error);
-    throw error;
+    console.error('Error syncing game data from Rails:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', error.message);
+    }
+    // Don't throw - return false to indicate sync failed
+    return false;
   }
 }
 
@@ -31,7 +36,7 @@ export async function syncGameDataFromRails(): Promise<void> {
  * Sync fighters from Rails to Firestore
  * Fetches all battle-ready profiles and updates Firestore
  */
-export async function syncFightersFromRails(): Promise<void> {
+export async function syncFightersFromRails(): Promise<boolean> {
   try {
     console.log('Syncing fighters from Rails...');
     
@@ -50,9 +55,14 @@ export async function syncFightersFromRails(): Promise<void> {
     }
     
     console.log(`Synced ${fighters.length} fighters to Firestore`);
+    return true;
   } catch (error) {
-    console.error('Error syncing fighters:', error);
-    throw error;
+    console.error('Error syncing fighters from Rails:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', error.message);
+    }
+    // Don't throw - return false to indicate sync failed
+    return false;
   }
 }
 

@@ -13,6 +13,7 @@ export default function Home() {
   const [challengerId, setChallengerId] = useState('');
   const [opponentId, setOpponentId] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [syncWarning, setSyncWarning] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { GameData, Fighter } from './types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_TECHUB_API || 'http://localhost:3000/api/v1';
+const API_BASE_URL = 'https://techub.life/api/v1';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

@@ -1,18 +1,10 @@
 import axios from 'axios';
 import type { GameData, Fighter } from './types';
 
-const API_BASE_URL = 'https://techub.life/api/v2';
-const API_BASE_URL_V1 = 'https://techub.life/api/v1';
+const API_BASE_URL = 'https://techub.life/api/v1';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-const apiV1 = axios.create({
-  baseURL: API_BASE_URL_V1,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -29,38 +21,18 @@ export const techubAPI = {
 
   /**
    * Fetch a specific fighter's card data
-   * Tries new frozen endpoint first, falls back to old endpoint if not available
    */
   async getFighter(username: string): Promise<Fighter> {
-    try {
-      const response = await api.get(`/battles/profiles/${username}/card`);
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
-        // Fallback to v1 endpoint
-        const response = await apiV1.get(`/profiles/${username}/card`);
-        return response.data;
-      }
-      throw error;
-    }
+    const response = await api.get(`/profiles/${username}/card`);
+    return response.data;
   },
 
   /**
    * Fetch all battle-ready profiles
-   * Tries new frozen endpoint first, falls back to old endpoint if not available
    */
   async getBattleReadyProfiles(): Promise<Fighter[]> {
-    try {
-      const response = await api.get('/battles/profiles/battle-ready');
-      return response.data.profiles;
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
-        // Fallback to v1 endpoint
-        const response = await apiV1.get('/profiles/battle-ready');
-        return response.data.profiles;
-      }
-      throw error;
-    }
+    const response = await api.get('/profiles/battle-ready');
+    return response.data.profiles;
   },
 
   /**

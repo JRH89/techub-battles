@@ -44,7 +44,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     return [...staticPages, ...playerPages];
   } catch (error) {
-    console.error('Error generating sitemap:', error);
+    // Error generating sitemap
     // Return static pages if dynamic generation fails
     return staticPages;
   }

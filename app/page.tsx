@@ -32,7 +32,7 @@ export default function Home() {
         const needsSync = await shouldSyncFighters();
         
         if (needsSync) {
-          console.log('Syncing data from Rails (first time or >24hrs old)...');
+          // Syncing data from Rails (first time or >24hrs old)...
           // Sync both fighters and game data
           const [fightersSuccess, gameDataSuccess] = await Promise.all([
             syncFightersFromRails(),
@@ -42,7 +42,7 @@ export default function Home() {
           // Show warning if sync failed but don't block the app
           if (!fightersSuccess || !gameDataSuccess) {
             setSyncWarning('Unable to sync from Rails server. Using cached data from Firestore.');
-            console.warn('Rails sync failed - continuing with Firestore data');
+            // Rails sync failed - continuing with Firestore data
           }
         }
         

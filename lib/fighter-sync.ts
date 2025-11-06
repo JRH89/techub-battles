@@ -9,7 +9,7 @@ import { techubAPI } from './techub-api';
  */
 export async function syncGameDataFromRails(): Promise<boolean> {
   try {
-    console.log('Syncing game data from Rails...');
+    // Syncing game data from Rails...
     
     // Fetch game data from Rails
     const gameData = await techubAPI.getGameData();
@@ -20,12 +20,12 @@ export async function syncGameDataFromRails(): Promise<boolean> {
       last_synced: new Date(),
     });
     
-    console.log('Game data synced to Firestore');
+    // Game data synced to Firestore
     return true;
   } catch (error) {
-    console.error('Error syncing game data from Rails:', error);
+    // Error syncing game data from Rails
     if (error instanceof Error) {
-      console.error('Error details:', error.message);
+      // Error details
     }
     // Don't throw - return false to indicate sync failed
     return false;
@@ -38,7 +38,7 @@ export async function syncGameDataFromRails(): Promise<boolean> {
  */
 export async function syncFightersFromRails(): Promise<boolean> {
   try {
-    console.log('Syncing fighters from Rails...');
+    // Syncing fighters from Rails...
     
     // Fetch all battle-ready profiles from Rails
     const fighters = await techubAPI.getBattleReadyProfiles();
@@ -54,12 +54,12 @@ export async function syncFightersFromRails(): Promise<boolean> {
       });
     }
     
-    console.log(`Synced ${fighters.length} fighters to Firestore`);
+    // Synced fighters to Firestore
     return true;
   } catch (error) {
-    console.error('Error syncing fighters from Rails:', error);
+    // Error syncing fighters from Rails
     if (error instanceof Error) {
-      console.error('Error details:', error.message);
+      // Error details
     }
     // Don't throw - return false to indicate sync failed
     return false;
@@ -74,14 +74,14 @@ export async function getGameDataFromFirestore(): Promise<GameData | null> {
     const gameDataDoc = await getDocs(query(collection(db, 'game_data'), limit(1)));
     
     if (gameDataDoc.empty) {
-      console.warn('No game data found in Firestore');
+      // No game data found in Firestore
       return null;
     }
     
     const data = gameDataDoc.docs[0].data();
     
-    console.log('Raw Firestore game data:', data);
-    console.log('Archetype abilities keys:', Object.keys(data.archetype_abilities || {}));
+    // Raw Firestore game data
+    // Archetype abilities keys
     
     return {
       archetypes: data.archetypes,
@@ -91,7 +91,7 @@ export async function getGameDataFromFirestore(): Promise<GameData | null> {
       mechanics: data.mechanics,
     };
   } catch (error) {
-    console.error('Error fetching game data from Firestore:', error);
+    // Error fetching game data from Firestore
     throw error;
   }
 }
@@ -109,7 +109,7 @@ export async function getFightersFromFirestore(): Promise<Fighter[]> {
       card: doc.data().card,
     }));
   } catch (error) {
-    console.error('Error fetching fighters from Firestore:', error);
+    // Error fetching fighters from Firestore
     throw error;
   }
 }
@@ -138,7 +138,7 @@ export async function shouldSyncFighters(): Promise<boolean> {
     return hoursSinceSync > 24;
     
   } catch (error) {
-    console.error('Error checking sync status:', error);
+    // Error checking sync status
     return true; // Sync on error to be safe
   }
 }

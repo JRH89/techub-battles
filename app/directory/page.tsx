@@ -35,7 +35,7 @@ export default function DirectoryPage() {
       setFighters(data);
       setFilteredFighters(data);
     } catch (error) {
-      console.error('Error loading fighters:', error);
+      // Error loading fighters
     } finally {
       setLoading(false);
     }

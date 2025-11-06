@@ -111,6 +111,7 @@ export interface BattleResult {
     challenger: number;
     opponent: number;
   };
+  first_attacker: string;
 }
 
 export interface FighterStats {

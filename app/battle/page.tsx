@@ -55,7 +55,7 @@ function BattleContent() {
       setGameData(gameDataResponse);
     } catch (err) {
       setError('Failed to load battle data');
-      console.error(err);
+      // Error in battle page
     } finally {
       setLoading(false);
     }

@@ -102,11 +102,11 @@ export async function saveBattleResult(
       timestamp: serverTimestamp(),
     });
     
-    console.log('Battle result saved:', docRef.id);
+    // Battle result saved
     return docRef.id;
     
   } catch (error) {
-    console.error('Error saving battle result:', error);
+    // Error saving battle result
     // Don't throw - battles should work even if storage fails
     return null;
   }

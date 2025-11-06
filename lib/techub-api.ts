@@ -41,11 +41,7 @@ export const techubAPI = {
   async recordBattle(challengerId: number, opponentId: number, winnerId: number) {
     // Skip DB calls in development mode
     if (process.env.NODE_ENV === 'development') {
-      console.log('DEV MODE: Skipping battle recording to DB', {
-        challengerId,
-        opponentId,
-        winnerId
-      });
+      // DEV MODE: Skipping battle recording to DB
       return { success: true, message: 'Dev mode: Battle not saved to DB' };
     }
     

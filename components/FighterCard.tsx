@@ -39,11 +39,10 @@ export default function FighterCard({
         scale: isUsingSpecialMove ? [1, 1.05, 1] : 1,
         boxShadow: isUsingSpecialMove 
           ? ['0 0 0 0 rgba(99, 102, 241, 0)', '0 0 40px 10px rgba(99, 102, 241, 0.8)', '0 0 0 0 rgba(99, 102, 241, 0)']
-          : undefined
+          : 'none'
       }}
       transition={{ 
-        duration: isUsingSpecialMove ? 0.8 : 0.5,
-        scale: { repeat: isUsingSpecialMove ? 1 : 0 }
+        duration: isUsingSpecialMove ? 0.8 : 0.5
       }}
       className={`rounded-xl sm:rounded-2xl border-2 sm:border-4 ${borderColor} bg-white dark:bg-slate-900 p-2 sm:p-4 lg:p-6 shadow-2xl relative`}
     >

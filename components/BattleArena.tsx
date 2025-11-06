@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Pause, RotateCcw, FastForward, Smartphone } from 'lucide-react';
+import { Pause, RotateCcw, FastForward, Smartphone, ExternalLink, X } from 'lucide-react';
 import { simulateBattle } from '@/lib/battle-engine';
 import { saveBattleResult } from '@/lib/battle-storage';
 import type { Fighter, GameData, BattleEvent, BattleResult } from '@/lib/types';
+import { isFromTwitter } from '@/lib/twitter-detection';
 import FighterCard from './FighterCard';
 import BattleLog from './BattleLog';
 
@@ -34,9 +35,16 @@ export default function BattleArena({
   const [challengerUsingSpecial, setChallengerUsingSpecial] = useState(false);
   const [opponentUsingSpecial, setOpponentUsingSpecial] = useState(false);
   const [isLandscape, setIsLandscape] = useState(true);
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [battleStarted, setBattleStarted] = useState(false);
+  const [showTwitterBanner, setShowTwitterBanner] = useState(false);
+  const [dismissedTwitterBanner, setDismissedTwitterBanner] = useState(false);
 
   // Check orientation on mobile
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     const checkOrientation = () => {
       // Only enforce landscape on mobile/tablet (< 1024px width)
       if (window.innerWidth < 1024) {
@@ -56,19 +64,52 @@ export default function BattleArena({
     };
   }, []);
 
+  // Check if user is coming from Twitter
+  useEffect(() => {
+    // Only run on client side
+    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+      try {
+        if (isFromTwitter() && !dismissedTwitterBanner) {
+          setShowTwitterBanner(true);
+        }
+      } catch (error) {
+        // Twitter detection failed
+      }
+    }
+  }, [dismissedTwitterBanner]);
+
   // Simulate battle on mount
   useEffect(() => {
     try {
       const result = simulateBattle(challenger, opponent, gameData);
       setBattleResult(result);
+      
+      // Start countdown immediately
+      setCountdown(3);
+      const countdownInterval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev === null || prev <= 1) {
+            clearInterval(countdownInterval);
+            // Show speed advantage for 2 seconds after countdown
+            setTimeout(() => {
+              setBattleStarted(true);
+              setIsPlaying(true);
+            }, 2000);
+            return null;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      
+      return () => clearInterval(countdownInterval);
     } catch (error) {
-      console.error('Battle simulation error:', error);
+      // Battle simulation error
     }
   }, [challenger, opponent, gameData]);
 
   // Animation loop
   useEffect(() => {
-    if (!isPlaying || !battleResult) return;
+    if (!isPlaying || !battleResult || !battleStarted) return;
 
     const interval = setInterval(() => {
       setCurrentEventIndex((prev) => {
@@ -82,7 +123,7 @@ export default function BattleArena({
           // Save battle result to Firebase when complete
           saveBattleResult(battleResult, challenger, opponent).then((battleId) => {
             if (battleId) {
-              console.log('Battle saved with ID:', battleId);
+              // Battle saved with ID
             }
           });
           
@@ -227,6 +268,8 @@ export default function BattleArena({
     setOpponentHP(100);
     setChallengerMessage('');
     setOpponentMessage('');
+    setCountdown(null);
+    setBattleStarted(false);
   };
 
   const handleSpeedChange = (newSpeed: number) => {
@@ -283,6 +326,48 @@ export default function BattleArena({
 
   return (
     <div className="min-h-screen h-full bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 py-8 px-4">
+      {/* Twitter Banner */}
+      {showTwitterBanner && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="max-w-7xl mx-auto mb-4"
+        >
+          <div className="bg-black text-white rounded-xl p-4 flex items-center justify-between shadow-2xl">
+            <div className="flex items-center gap-3">
+              <div className="bg-blue-500 rounded-full p-2">
+                <X size={20} className="text-white" />
+              </div>
+              <div>
+                <div className="font-bold text-white">Coming from Twitter?</div>
+                <div className="text-sm text-gray-300">For the best experience, open this page in a new browser window</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  window.open(window.location.href, '_blank');
+                }}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+              >
+                <ExternalLink size={16} />
+                Open in Browser
+              </button>
+              <button
+                onClick={() => {
+                  setDismissedTwitterBanner(true);
+                  setShowTwitterBanner(false);
+                }}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+      
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Controls with Header in Center */}
         <div className="rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 sm:p-6 shadow-xl">
@@ -303,19 +388,9 @@ export default function BattleArena({
 
           {/* Controls Row - Stacked on mobile, side-by-side on desktop */}
           <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 sm:gap-4">
-            {/* Play/Pause/Reset */}
+            {/* Pause/Reset */}
             <div className="flex items-center gap-2 sm:gap-3">
-              {!isPlaying ? (
-                <button
-                  onClick={handlePlay}
-                  disabled={!battleResult}
-                  className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 px-4 sm:px-6 py-2 sm:py-3 text-white text-sm sm:text-base font-bold shadow-lg hover:from-emerald-700 hover:to-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Play size={18} className="sm:w-5 sm:h-5" />
-                  <span className="hidden xs:inline">Play Battle</span>
-                  <span className="xs:hidden">Play</span>
-                </button>
-              ) : (
+              {isPlaying && battleStarted ? (
                 <button
                   onClick={handlePause}
                   className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-4 sm:px-6 py-2 sm:py-3 text-white text-sm sm:text-base font-bold shadow-lg hover:from-amber-700 hover:to-orange-700 transition-all"
@@ -323,7 +398,12 @@ export default function BattleArena({
                   <Pause size={18} className="sm:w-5 sm:h-5" />
                   <span>Pause</span>
                 </button>
-              )}
+              ) : countdown ? (
+                <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 px-4 sm:px-6 py-2 sm:py-3 text-white text-sm sm:text-base font-bold shadow-lg">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                  <span>Starting...</span>
+                </div>
+              ) : null}
 
               <button
                 onClick={handleReset}
@@ -421,8 +501,36 @@ export default function BattleArena({
               )}
 
 
-              {/* VS Symbol (only show before battle starts) */}
-              {!isPlaying && !battleComplete && (
+              {/* Countdown or Speed Advantage or VS */}
+              {!battleStarted && battleResult && countdown === null ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="rounded-xl bg-gradient-to-r from-yellow-400 via-orange-500 to-yellow-400 px-4 py-3 sm:px-6 sm:py-4 lg:px-8 lg:py-6 text-white shadow-2xl text-center max-w-xs"
+                >
+                  <div className="text-sm sm:text-base lg:text-lg font-bold mb-1">
+                    ⚡ SPEED ADVANTAGE ⚡
+                  </div>
+                  <div className="text-xs sm:text-sm lg:text-base">
+                    {battleResult.first_attacker === challenger.profile.login ? (
+                      <span>@{challenger.profile.login} attacks first!</span>
+                    ) : (
+                      <span>@{opponent.profile.login} attacks first!</span>
+                    )}
+                  </div>
+                </motion.div>
+              ) : countdown !== null ? (
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: 'spring', bounce: 0.5 }}
+                  className="rounded-full bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 p-6 sm:p-8 lg:p-12 text-white shadow-2xl"
+                >
+                  <div className="text-4xl sm:text-5xl lg:text-6xl font-bold animate-pulse">
+                    {countdown}
+                  </div>
+                </motion.div>
+              ) : !battleStarted && battleResult && !countdown ? (
                 <motion.div
                   animate={{
                     scale: [1, 1.1, 1],
@@ -435,7 +543,7 @@ export default function BattleArena({
                 >
                   <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">VS</div>
                 </motion.div>
-              )}
+              ) : null}
 
               {/* Opponent's Move (Below center) */}
               {opponentMessage && (

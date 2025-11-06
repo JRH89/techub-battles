@@ -10,10 +10,20 @@ jest.mock('firebase/firestore', () => ({
 }));
 
 const mockGameData: GameData = {
-  archetypes: {
-    'Code Warrior': { strong_against: 'Bug Hunter', weak_against: 'Architect' },
+  archetypes: ['Code Warrior', 'Bug Hunter', 'Architect'],
+  type_chart: {
+    'Code Warrior': { strong_against: ['Bug Hunter'], weak_against: ['Architect'] },
   },
   spirit_animals: {},
+  archetype_abilities: {},
+  mechanics: {
+    max_hp: 100,
+    max_turns: 20,
+    base_damage_multiplier: 1.0,
+    random_variance: { min: 0.8, max: 1.2 },
+    type_multipliers: { strong: 1.5, neutral: 1.0, weak: 0.75 },
+    minimum_damage: 5,
+  },
 };
 
 const createMockFighter = (id: number, login: string): Fighter => ({
@@ -45,8 +55,9 @@ describe('Battle Storage', () => {
       const mockBattleResult: BattleResult = {
         winner: challenger,
         loser: opponent,
+        first_attacker: 'challenger',
         battle_log: [
-          { type: 'start', turn: 0, message: 'Battle begins!' },
+          { type: 'battle_end', turn: 0, message: 'Battle begins!' },
           { type: 'attack', turn: 1, attacker: 'challenger', defender: 'opponent', damage: 25, message: 'Hit!' },
         ],
         total_turns: 5,
@@ -68,6 +79,7 @@ describe('Battle Storage', () => {
       const mockBattleResult: BattleResult = {
         winner: challenger,
         loser: opponent,
+        first_attacker: 'challenger',
         battle_log: [
           { type: 'attack', turn: 1, attacker: 'challenger', defender: 'opponent', damage: 30, message: 'Hit!' },
           { type: 'attack', turn: 2, attacker: 'opponent', defender: 'challenger', damage: 15, message: 'Hit!' },
@@ -95,6 +107,7 @@ describe('Battle Storage', () => {
       const mockBattleResult: BattleResult = {
         winner: challenger,
         loser: opponent,
+        first_attacker: 'challenger',
         battle_log: [],
         total_turns: 1,
         final_hp: { challenger: 100, opponent: 0 },
@@ -115,6 +128,7 @@ describe('Battle Storage', () => {
       const mockBattleResult: BattleResult = {
         winner: challenger,
         loser: opponent,
+        first_attacker: 'challenger',
         battle_log: [
           { type: 'type_advantage', turn: 0, message: 'Code Warrior has advantage!' },
           { type: 'attack', turn: 1, attacker: 'challenger', defender: 'opponent', damage: 40, message: 'Critical!' },
@@ -138,6 +152,7 @@ describe('Battle Storage', () => {
       const mockBattleResult: BattleResult = {
         winner: challenger,
         loser: opponent,
+        first_attacker: 'challenger',
         battle_log: [],
         total_turns: 1,
         final_hp: { challenger: 100, opponent: 0 },

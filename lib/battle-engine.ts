@@ -20,12 +20,6 @@ export class BattleEngine {
     this.challenger = challenger;
     this.opponent = opponent;
 
-    console.log('=== BATTLE ENGINE INIT ===');
-    console.log('Game data:', gameData);
-    console.log('Archetype abilities:', gameData?.archetype_abilities);
-    console.log('Challenger special move:', challenger.card.special_move);
-    console.log('Opponent special move:', opponent.card.special_move);
-
     // Initialize stats with spirit animal modifiers
     this.challengerStats = this.calculateModifiedStats(challenger);
     this.opponentStats = this.calculateModifiedStats(opponent);
@@ -317,9 +311,10 @@ export class BattleEngine {
 
     // Speed check
     const turnOrder = this.determineTurnOrder();
+    const firstAttacker = turnOrder.first === 'challenger' ? this.challenger.profile.login : this.opponent.profile.login;
     this.battleLog.push({
       type: 'speed_check',
-      message: `${turnOrder.first === 'challenger' ? this.challenger.profile.login : this.opponent.profile.login} moves first! (Speed: ${Math.round(turnOrder.first === 'challenger' ? this.challengerStats.speed : this.opponentStats.speed)})`,
+      message: `${firstAttacker} moves first! (Speed: ${Math.round(turnOrder.first === 'challenger' ? this.challengerStats.speed : this.opponentStats.speed)})`,
     });
 
     // Battle loop
@@ -365,6 +360,7 @@ export class BattleEngine {
         challenger: Math.round(this.challengerStats.hp * 10) / 10,
         opponent: Math.round(this.opponentStats.hp * 10) / 10,
       },
+      first_attacker: firstAttacker,
     };
   }
 }

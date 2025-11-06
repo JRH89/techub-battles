@@ -143,7 +143,7 @@ export default function PlayerProfilePage() {
         recentBattles: battles.slice(0, 10), // Show last 10 battles
       });
     } catch (error) {
-      console.error('Error loading player data:', error);
+      // Error loading player data
     } finally {
       setLoading(false);
     }

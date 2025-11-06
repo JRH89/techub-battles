@@ -67,7 +67,7 @@ export default function LeaderboardPage() {
       
       setLeaderboard(entries);
     } catch (error) {
-      console.error('Error loading leaderboard:', error);
+      // Error loading leaderboard
     } finally {
       setLoading(false);
     }

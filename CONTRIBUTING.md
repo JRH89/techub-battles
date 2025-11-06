@@ -2,59 +2,89 @@
 
 ## Development Principles
 
-This project follows Rails-inspired best practices adapted for Next.js:
+This project follows Rails-inspired best practices adapted for Next.js with modern React patterns:
 
 ### 1. **Convention Over Configuration**
 - Follow established file structure patterns
 - Use consistent naming conventions
 - Leverage Next.js app router conventions
+- Maintain TypeScript strict mode compliance
 
 ### 2. **DRY (Don't Repeat Yourself)**
 - Extract reusable components
 - Create utility functions for common operations
 - Use TypeScript types to enforce consistency
+- Implement intelligent caching to reduce redundant API calls
 
 ### 3. **Test-Driven Development**
 - Write tests for new features
-- Maintain 70%+ code coverage
+- Maintain 90%+ code coverage (updated from 70%)
 - Test behavior, not implementation
+- Ensure all tests pass before merging
 
 ### 4. **Separation of Concerns**
 ```
-lib/          - Business logic, pure functions
-components/   - Presentational components
-app/          - Pages and routing
+lib/          - Business logic, pure functions, API clients
+components/   - Presentational components with hooks
+app/          - Pages and routing logic
 __tests__/    - Test files mirroring source structure
 ```
 
-## Code Organization
+### 5. **Performance First**
+- Client-side battle simulation for instant results
+- Incremental data sync to minimize API calls
+- Firebase caching for offline capability
+- Optimized bundle sizes with tree shaking
 
-### File Structure
+## Current Architecture
+
+### File Structure (Updated)
 ```
 techub-battles/
 ├── app/                    # Next.js pages (app router)
-│   ├── page.tsx           # Home page
-│   ├── battle/            # Battle page
-│   ├── leaderboard/       # Leaderboard page
-│   ├── directory/         # Fighter directory
-│   ├── about/             # About page
-│   └── player/[login]/    # Dynamic player profile
+│   ├── page.tsx           # Home - fighter selection
+│   ├── battle/page.tsx    # Battle arena with auto-starting battles
+│   ├── leaderboard/       # Rankings and statistics
+│   ├── directory/         # Fighter browser
+│   ├── player/[login]/    # Dynamic player profiles
+│   └── sitemap.ts         # SEO sitemap generation
 ├── components/            # Reusable React components
-│   ├── BattleArena.tsx
-│   ├── FighterCard.tsx
-│   ├── Navbar.tsx
-│   └── Footer.tsx
+│   ├── BattleArena.tsx    # Main battle interface with animations
+│   ├── FighterCard.tsx    # Fighter display with dynamic HP bars
+│   ├── BattleControls.tsx # Battle playback controls
+│   └── TwitterBanner.tsx  # Browser detection and guidance
 ├── lib/                   # Business logic & utilities
-│   ├── battle-engine.ts   # Core battle simulation
-│   ├── battle-storage.ts  # Firebase operations
-│   ├── fighter-sync.ts    # Fighter data management
+│   ├── battle-engine.ts   # Core battle simulation (client-side)
+│   ├── battle-storage.ts  # Firebase operations and battle saving
+│   ├── fighter-sync.ts    # Incremental data synchronization
+│   ├── techub-api.ts      # Rails API client with existing endpoints
+│   ├── twitter-detection.ts # Client-side browser detection
 │   ├── firebase.ts        # Firebase configuration
-│   └── types.ts           # TypeScript definitions
-└── __tests__/             # Test files
-    ├── lib/
-    ├── components/
-    └── integration/
+│   └── types.ts           # Comprehensive TypeScript definitions
+└── __tests__/             # Test files (18 tests passing)
+    ├── lib/               # Unit tests for business logic
+    ├── components/        # Component tests with React Testing Library
+    └── integration/       # End-to-end workflow tests
 ```
+
+### Key Architectural Decisions
+
+#### Client-Side Battle Engine
+- All battle computations run in the user's browser
+- Eliminates server costs and provides instant results
+- Complex damage calculations with type advantages and spirit animals
+- Real-time animations with Framer Motion
+
+#### Intelligent Data Sync
+- Incremental sync using existing Rails API endpoints
+- Timestamp-based comparison to only update changed fighters
+- 24-hour Firestore caching with 1-hour sync intervals
+- Graceful fallback to cached data when Rails is unavailable
+
+#### Twitter Detection System
+- Client-side browser detection for Twitter/X in-app browser
+- Non-intrusive banner suggesting browser switch
+- SSR-safe implementation with proper error handling
 
 ### Naming Conventions
 

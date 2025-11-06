@@ -1,3 +1,4 @@
+import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import FighterCard from '@/components/FighterCard';
 import type { Fighter } from '@/lib/types';

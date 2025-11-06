@@ -5,6 +5,7 @@ export interface Profile {
   login: string;
   name: string;
   avatar_url: string;
+  updated_at?: string; // ISO timestamp from Rails
 }
 
 export interface ProfileCard {

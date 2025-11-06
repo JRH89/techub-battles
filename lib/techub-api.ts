@@ -23,7 +23,7 @@ export const techubAPI = {
    * Fetch a specific fighter's card data
    */
   async getFighter(username: string): Promise<Fighter> {
-    const response = await api.get(`/profiles/${username}/card`);
+    const response = await api.get(`/battles/profiles/${username}/card`);
     return response.data;
   },
 
@@ -31,7 +31,7 @@ export const techubAPI = {
    * Fetch all battle-ready profiles
    */
   async getBattleReadyProfiles(): Promise<Fighter[]> {
-    const response = await api.get('/profiles/battle-ready');
+    const response = await api.get('/battles/profiles/battle-ready');
     return response.data.profiles;
   },
 

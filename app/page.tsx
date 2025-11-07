@@ -212,6 +212,24 @@ export default function Home() {
               All simulation happens client-side - completely free! 🎉
             </p>
           </div>
+
+          {/* Call to Action */}
+          <div className="mt-6 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-2 border-blue-200 dark:border-blue-800 p-6 text-center">
+            <p className="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+              Want to see your name on the list and start fighting?
+            </p>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+              Join the TecHub community today!
+            </p>
+            <a
+              href="https://techub.life"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-white font-bold text-base shadow-lg hover:from-blue-700 hover:to-purple-700 transition-all"
+            >
+              Sign up at techub.life
+            </a>
+          </div>
         </div>
       </div>
     </div>

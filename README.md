@@ -106,7 +106,8 @@ rails s
 ```
 
 2. **Automatic Sync** - The app will automatically sync fighter data on first load
-3. **Cached Operation** - After initial sync, the app works offline for 24 hours using cached data
+3. **HTTP Caching** - Uses standard HTTP caching (304 Not Modified) for efficient API calls
+4. **Offline Capability** - Firestore cache enables battles when API is unreachable
 
 ## 🎮 Battle Mechanics Deep Dive
 
@@ -234,7 +235,8 @@ The application maintains comprehensive test coverage:
 
 - **Incremental Sync**: Only updates changed fighters from Rails API
 - **Client-Side Simulation**: Zero server computation during battles
-- **Intelligent Caching**: 24-hour Firestore caching with smart invalidation
+- **HTTP Caching**: Leverages 304 responses to minimize bandwidth and API costs
+- **Firestore Cache**: Local cache for offline capability and fallback
 - **Bundle Optimization**: Tree shaking and code splitting
 - **Image Optimization**: Next.js automatic image optimization
 
@@ -301,7 +303,7 @@ In Vercel dashboard, set:
 **"Server unable to be reached" Error**
 - **Cause**: Rails API not running or network issues
 - **Solution**: App automatically falls back to cached Firestore data
-- **Prevention**: 24-hour caching provides graceful degradation
+- **Prevention**: Firestore cache provides graceful degradation
 
 **No Fighters Available**
 - **Cause**: First-time setup without initial sync
@@ -348,10 +350,37 @@ GET /api/v1/profiles/:username/card
 # Battle-Ready Fighters
 GET /api/v1/profiles/battle-ready
 # Returns: Array of all available fighters
+# Supports: ETag/Last-Modified headers for 304 caching
 
 # Battle Results (Optional)
 POST /api/v1/battles
 # Records battle outcome for leaderboards
+```
+
+### HTTP Caching Implementation (Rails)
+
+To minimize API costs and bandwidth, implement conditional GET support:
+
+```ruby
+# app/controllers/api/v1/profiles_controller.rb
+def battle_ready
+  # Use the latest updated_at timestamp as ETag
+  last_modified = Profile.battle_ready.maximum(:updated_at)
+  
+  # Rails automatically returns 304 if client's ETag matches
+  if stale?(last_modified: last_modified, public: true)
+    @profiles = Profile.battle_ready.includes(:card)
+    render json: { profiles: @profiles }
+  end
+  # If not stale, Rails sends 304 Not Modified (no body, minimal bandwidth)
+end
+```
+
+**Benefits:**
+- 304 responses are ~200 bytes vs full JSON (potentially KB/MB)
+- No database queries or JSON serialization on cache hits
+- Significantly reduces hosting costs and API load
+- Client always gets fresh data when it changes
 ```
 
 ### Data Schema

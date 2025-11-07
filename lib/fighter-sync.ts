@@ -208,7 +208,7 @@ export async function getFightersFromFirestore(): Promise<Fighter[]> {
 }
 
 /**
- * Check if fighters need syncing (if collection is empty or old)
+ * Check if fighters need syncing (if collection is empty)
  */
 export async function shouldSyncFighters(): Promise<boolean> {
   try {
@@ -222,16 +222,8 @@ export async function shouldSyncFighters(): Promise<boolean> {
       return true;
     }
     
-    // Check last sync time using our new tracking system
-    const lastSync = await getLastSyncTimestamp();
-    
-    if (!lastSync) {
-      return true; // Never synced before
-    }
-    
-    // Sync if more than 1 hour ago for more frequent updates
-    const hoursSinceSync = (Date.now() - lastSync.getTime()) / (1000 * 60 * 60);
-    return hoursSinceSync > 1;
+    // Always sync if fighters exist - let API handle caching with 304 responses
+    return true;
     
   } catch (error) {
     // Error checking sync status

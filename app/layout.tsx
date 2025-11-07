@@ -1,26 +1,32 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { createMetadata, generateWebsiteSchema, generateOrganizationSchema, generateGameSchema } from "@/lib/metadata";
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
+import './globals.css';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import {
+  createMetadata,
+  generateWebsiteSchema,
+  generateOrganizationSchema,
+  generateGameSchema,
+} from '@/lib/metadata';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from '@vercel/analytics/next';
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = createMetadata({
-  title: "TecHub Battles - Epic Developer Profile Battles",
-  description: "Watch TecHub developer profiles battle it out in epic turn-based combat! Unique stats, archetypes, spirit animals, and special moves determine the victor. Join the leaderboard and compete!",
-  path: "/",
+  title: 'TecHub Battles - Epic Developer Profile Battles',
+  description:
+    'Watch TecHub developer profiles battle it out in epic turn-based combat! Unique stats, archetypes, spirit animals, and special moves determine the victor. Join the leaderboard and compete!',
+  path: '/',
   keywords: [
     'TecHub Battles',
     'developer battle game',
@@ -59,7 +65,9 @@ export default function RootLayout({
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationSchema),
+          }}
         />
         <script
           type="application/ld+json"

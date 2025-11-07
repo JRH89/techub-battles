@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Swords, Shield, Zap } from 'lucide-react';
 import type { Fighter } from '@/lib/types';
+import Image from 'next/image';
 import HPBar from './HPBar';
 
 interface FighterCardProps {
@@ -27,22 +28,26 @@ export default function FighterCard({
   isUsingSpecialMove = false,
 }: FighterCardProps) {
   const borderColor = side === 'left' ? 'border-blue-500' : 'border-red-500';
-  const ringColor = side === 'left' ? 'ring-blue-500' : 'ring-red-500';
+  const _ringColor = side === 'left' ? 'ring-blue-500' : 'ring-red-500';
   const chargePercentage = (specialMoveCharge / 3) * 100;
 
   return (
     <motion.div
       initial={{ opacity: 0, x: side === 'left' ? -50 : 50 }}
-      animate={{ 
-        opacity: 1, 
+      animate={{
+        opacity: 1,
         x: 0,
         scale: isUsingSpecialMove ? [1, 1.05, 1] : 1,
-        boxShadow: isUsingSpecialMove 
-          ? ['0 0 0 0 rgba(99, 102, 241, 0)', '0 0 40px 10px rgba(99, 102, 241, 0.8)', '0 0 0 0 rgba(99, 102, 241, 0)']
-          : 'none'
+        boxShadow: isUsingSpecialMove
+          ? [
+              '0 0 0 0 rgba(99, 102, 241, 0)',
+              '0 0 40px 10px rgba(99, 102, 241, 0.8)',
+              '0 0 0 0 rgba(99, 102, 241, 0)',
+            ]
+          : 'none',
       }}
-      transition={{ 
-        duration: isUsingSpecialMove ? 0.8 : 0.5
+      transition={{
+        duration: isUsingSpecialMove ? 0.8 : 0.5,
       }}
       className={`rounded-xl sm:rounded-2xl border-2 sm:border-4 ${borderColor} bg-white dark:bg-slate-900 p-2 sm:p-4 lg:p-6 shadow-2xl relative`}
     >
@@ -64,14 +69,12 @@ export default function FighterCard({
       <div className="flex flex-col items-center space-y-2 sm:space-y-3 lg:space-y-4">
         {/* Avatar */}
         <div className="relative">
-          <img
+          <Image
             src={`https://github.com/${fighter.profile.login}.png?size=200`}
             alt={fighter.profile.login}
-            className={`h-12 w-12 sm:h-16 sm:w-16 lg:h-24 lg:w-24 rounded-full ring-2 sm:ring-4 ${ringColor} shadow-lg`}
-            onError={(e) => {
-              // Final fallback to a placeholder if GitHub avatar also fails
-              e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fighter.profile.login)}&size=200&background=random`;
-            }}
+            width={200}
+            height={200}
+            className="w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 rounded-full border-4 border-gray-300 shadow-lg object-cover"
           />
           {isWinner && (
             <motion.div
@@ -151,7 +154,7 @@ export default function FighterCard({
               Buff
             </div>
             <p className="text-[10px] sm:text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">
-              {fighter.card.buff || "—"}
+              {fighter.card.buff || '—'}
             </p>
           </div>
 
@@ -161,7 +164,7 @@ export default function FighterCard({
               Weakness
             </div>
             <p className="text-[10px] sm:text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">
-              {fighter.card.weakness || "—"}
+              {fighter.card.weakness || '—'}
             </p>
           </div>
 
@@ -171,7 +174,7 @@ export default function FighterCard({
               Vibe
             </div>
             <p className="text-[10px] sm:text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">
-              {fighter.card.vibe || "—"}
+              {fighter.card.vibe || '—'}
             </p>
           </div>
 
@@ -181,22 +184,27 @@ export default function FighterCard({
               Special
             </div>
             <p className="text-[10px] sm:text-xs font-bold text-indigo-900 dark:text-indigo-100 mb-0.5 sm:mb-1 truncate">
-              {fighter.card.special_move || "—"}
+              {fighter.card.special_move || '—'}
             </p>
             {/* Charge Bar */}
             <div className="h-1 sm:h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-              <motion.div 
+              <motion.div
                 className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
                 initial={{ width: 0 }}
-                animate={{ 
+                animate={{
                   width: `${chargePercentage}%`,
-                  boxShadow: chargePercentage === 100 
-                    ? ['0 0 0 0 rgba(99, 102, 241, 0.7)', '0 0 10px 2px rgba(99, 102, 241, 0.9)', '0 0 0 0 rgba(99, 102, 241, 0.7)']
-                    : undefined
+                  boxShadow:
+                    chargePercentage === 100
+                      ? [
+                          '0 0 0 0 rgba(99, 102, 241, 0.7)',
+                          '0 0 10px 2px rgba(99, 102, 241, 0.9)',
+                          '0 0 0 0 rgba(99, 102, 241, 0.7)',
+                        ]
+                      : undefined,
                 }}
-                transition={{ 
+                transition={{
                   width: { duration: 0.3 },
-                  boxShadow: { duration: 0.5, repeat: Infinity }
+                  boxShadow: { duration: 0.5, repeat: Infinity },
                 }}
               />
             </div>

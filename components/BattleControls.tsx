@@ -57,7 +57,10 @@ export default function BattleControls({
 
         {/* Speed Control */}
         <div className="flex items-center gap-3">
-          <FastForward size={20} className="text-slate-600 dark:text-slate-400" />
+          <FastForward
+            size={20}
+            className="text-slate-600 dark:text-slate-400"
+          />
           <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
             Speed:
           </label>

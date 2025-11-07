@@ -19,53 +19,59 @@ export default function Home() {
     async function loadData() {
       try {
         setLoading(true);
-        
-        const { 
-          shouldSyncFighters, 
-          getFightersFromFirestore, 
+
+        const {
+          shouldSyncFighters,
+          getFightersFromFirestore,
           syncFightersFromRails,
           getGameDataFromFirestore,
-          syncGameDataFromRails
+          syncGameDataFromRails,
         } = await import('@/lib/fighter-sync');
-        
+
         // Check if we need to sync from Rails
         const needsSync = await shouldSyncFighters();
-        
+
         if (needsSync) {
           // Syncing data from Rails (first time or >24hrs old)...
           // Sync both fighters and game data
           const [fightersSuccess, gameDataSuccess] = await Promise.all([
             syncFightersFromRails(),
-            syncGameDataFromRails()
+            syncGameDataFromRails(),
           ]);
-          
+
           // Show warning if sync failed but don't block the app
           if (!fightersSuccess || !gameDataSuccess) {
-            setSyncWarning('Unable to sync from Rails server. Using cached data from Firestore.');
+            setSyncWarning(
+              'Unable to sync from Rails server. Using cached data from Firestore.'
+            );
             // Rails sync failed - continuing with Firestore data
           }
         }
-        
+
         // Get everything from Firestore (fast, no Rails calls)
         const [profilesData, gameDataResponse] = await Promise.all([
           getFightersFromFirestore(),
-          getGameDataFromFirestore()
+          getGameDataFromFirestore(),
         ]);
-        
+
         // Check if we have data in Firestore
         if (!profilesData || profilesData.length === 0) {
-          setError('No fighters found in database. Please ensure the Rails server is running and data has been synced at least once.');
+          setError(
+            'No fighters found in database. Please ensure the Rails server is running and data has been synced at least once.'
+          );
           return;
         }
-        
+
         if (!gameDataResponse) {
-          setError('No game data found in database. Please ensure the Rails server is running and data has been synced at least once.');
+          setError(
+            'No game data found in database. Please ensure the Rails server is running and data has been synced at least once.'
+          );
           return;
         }
-        
+
         setFighters(profilesData);
         setGameData(gameDataResponse);
-        
+
         if (profilesData.length >= 2) {
           setChallengerId(profilesData[0].profile.id.toString());
           setOpponentId(profilesData[1].profile.id.toString());
@@ -111,7 +117,8 @@ export default function Home() {
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 mb-3 sm:mb-4 px-2">
-            <span className="hidden sm:inline">⚔️ </span>TecHub Battles<span className="hidden sm:inline"> ⚔️</span>
+            <span className="hidden sm:inline">⚔️ </span>TecHub Battles
+            <span className="hidden sm:inline"> ⚔️</span>
           </h1>
           <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-400 px-4">
             Watch GitHub developer cards battle it out!
@@ -142,7 +149,10 @@ export default function Home() {
           <div className="space-y-6">
             {/* Challenger */}
             <div>
-              <label htmlFor="challenger-select" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label
+                htmlFor="challenger-select"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+              >
                 Challenger
               </label>
               <select
@@ -155,8 +165,9 @@ export default function Home() {
                 <option value="">Select Challenger...</option>
                 {fighters.map((fighter) => (
                   <option key={fighter.profile.id} value={fighter.profile.id}>
-                    @{fighter.profile.login} - {fighter.card.archetype} ({fighter.card.attack}/
-                    {fighter.card.defense}/{fighter.card.speed})
+                    @{fighter.profile.login} - {fighter.card.archetype} (
+                    {fighter.card.attack}/{fighter.card.defense}/
+                    {fighter.card.speed})
                   </option>
                 ))}
               </select>
@@ -171,7 +182,10 @@ export default function Home() {
 
             {/* Opponent */}
             <div>
-              <label htmlFor="opponent-select" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label
+                htmlFor="opponent-select"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+              >
                 Opponent
               </label>
               <select
@@ -184,8 +198,9 @@ export default function Home() {
                 <option value="">Select Opponent...</option>
                 {fighters.map((fighter) => (
                   <option key={fighter.profile.id} value={fighter.profile.id}>
-                    @{fighter.profile.login} - {fighter.card.archetype} ({fighter.card.attack}/
-                    {fighter.card.defense}/{fighter.card.speed})
+                    @{fighter.profile.login} - {fighter.card.archetype} (
+                    {fighter.card.attack}/{fighter.card.defense}/
+                    {fighter.card.speed})
                   </option>
                 ))}
               </select>
@@ -208,8 +223,8 @@ export default function Home() {
               Battle-Ready Profiles: {fighters.length}
             </p>
             <p className="text-xs">
-              Battles use type advantages, spirit animal bonuses, and turn-based combat.
-              All simulation happens client-side - completely free! 🎉
+              Battles use type advantages, spirit animal bonuses, and turn-based
+              combat. All simulation happens client-side - completely free! 🎉
             </p>
           </div>
 

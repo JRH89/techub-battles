@@ -20,8 +20,8 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="flex items-center gap-2 font-bold text-xl text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 transition"
             onClick={closeMobileMenu}
           >
@@ -32,32 +32,32 @@ export default function Navbar() {
 
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center gap-6">
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition"
             >
               <Swords className="h-4 w-4" />
               <span>Battle</span>
             </Link>
-            
-            <Link 
-              href="/leaderboard" 
+
+            <Link
+              href="/leaderboard"
               className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition"
             >
               <Trophy className="h-4 w-4" />
               <span>Leaderboard</span>
             </Link>
-            
-            <Link 
-              href="/directory" 
+
+            <Link
+              href="/directory"
               className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition"
             >
               <Users className="h-4 w-4" />
               <span>Directory</span>
             </Link>
-            
-            <Link 
-              href="/about" 
+
+            <Link
+              href="/about"
               className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition"
             >
               <Info className="h-4 w-4" />
@@ -65,8 +65,8 @@ export default function Navbar() {
             </Link>
 
             {/* TecHub Link */}
-            <a 
-              href="https://techub.life" 
+            <a
+              href="https://techub.life"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 text-sm font-bold text-white hover:from-blue-700 hover:to-purple-700 transition shadow-md"
@@ -94,35 +94,35 @@ export default function Navbar() {
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-slate-200 dark:border-slate-800">
             <div className="flex flex-col space-y-3">
-              <Link 
-                href="/" 
+              <Link
+                href="/"
                 className="flex items-center gap-3 px-4 py-3 text-base font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
                 onClick={closeMobileMenu}
               >
                 <Swords className="h-5 w-5" />
                 <span>Battle</span>
               </Link>
-              
-              <Link 
-                href="/leaderboard" 
+
+              <Link
+                href="/leaderboard"
                 className="flex items-center gap-3 px-4 py-3 text-base font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
                 onClick={closeMobileMenu}
               >
                 <Trophy className="h-5 w-5" />
                 <span>Leaderboard</span>
               </Link>
-              
-              <Link 
-                href="/directory" 
+
+              <Link
+                href="/directory"
                 className="flex items-center gap-3 px-4 py-3 text-base font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
                 onClick={closeMobileMenu}
               >
                 <Users className="h-5 w-5" />
                 <span>Directory</span>
               </Link>
-              
-              <Link 
-                href="/about" 
+
+              <Link
+                href="/about"
                 className="flex items-center gap-3 px-4 py-3 text-base font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
                 onClick={closeMobileMenu}
               >
@@ -131,8 +131,8 @@ export default function Navbar() {
               </Link>
 
               {/* TecHub Link Mobile */}
-              <a 
-                href="https://techub.life" 
+              <a
+                href="https://techub.life"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 mx-4 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 text-base font-bold text-white hover:from-blue-700 hover:to-purple-700 transition shadow-md"

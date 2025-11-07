@@ -21,17 +21,28 @@ export default function BattleLog({ events, className = '' }: BattleLogProps) {
   const getIcon = (type: string) => {
     switch (type) {
       case 'battle_start':
-        return <Flag className="text-emerald-600 dark:text-emerald-400" size={20} />;
+        return (
+          <Flag className="text-emerald-600 dark:text-emerald-400" size={20} />
+        );
       case 'type_advantage':
-        return <Zap className="text-yellow-600 dark:text-yellow-400" size={20} />;
+        return (
+          <Zap className="text-yellow-600 dark:text-yellow-400" size={20} />
+        );
       case 'speed_check':
         return <Gauge className="text-blue-600 dark:text-blue-400" size={20} />;
       case 'attack':
         return <Swords className="text-red-600 dark:text-red-400" size={20} />;
       case 'special_move':
-        return <Sparkles className="text-purple-600 dark:text-purple-400" size={20} />;
+        return (
+          <Sparkles
+            className="text-purple-600 dark:text-purple-400"
+            size={20}
+          />
+        );
       case 'passive_trigger':
-        return <Sparkles className="text-cyan-600 dark:text-cyan-400" size={20} />;
+        return (
+          <Sparkles className="text-cyan-600 dark:text-cyan-400" size={20} />
+        );
       case 'knockout':
         return <Skull className="text-red-600 dark:text-red-400" size={20} />;
       case 'battle_end':
@@ -96,7 +107,8 @@ export default function BattleLog({ events, className = '' }: BattleLogProps) {
                 </span>
                 {event.defender_hp !== undefined && (
                   <span>
-                    {event.defender} HP: {Math.round(event.defender_hp * 10) / 10}
+                    {event.defender} HP:{' '}
+                    {Math.round(event.defender_hp * 10) / 10}
                   </span>
                 )}
               </div>
@@ -115,7 +127,9 @@ export default function BattleLog({ events, className = '' }: BattleLogProps) {
   };
 
   return (
-    <div className={`rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl ${className}`}>
+    <div
+      className={`rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl ${className}`}
+    >
       {/* Header */}
       <div className="border-b-2 border-slate-200 dark:border-slate-700 p-4">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">

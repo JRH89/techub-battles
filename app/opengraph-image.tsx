@@ -14,7 +14,8 @@ export default async function Image() {
     (
       <div
         style={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #581c87 100%)',
+          background:
+            'linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #581c87 100%)',
           width: '100%',
           height: '100%',
           display: 'flex',
@@ -28,7 +29,8 @@ export default async function Image() {
           style={{
             fontSize: 120,
             fontWeight: 900,
-            background: 'linear-gradient(90deg, #dc2626 0%, #ea580c 50%, #eab308 100%)',
+            background:
+              'linear-gradient(90deg, #dc2626 0%, #ea580c 50%, #eab308 100%)',
             backgroundClip: 'text',
             color: 'transparent',
             display: 'flex',
@@ -47,7 +49,8 @@ export default async function Image() {
             maxWidth: '900px',
           }}
         >
-          Watch developer profiles battle with unique stats, archetypes, and special moves!
+          Watch developer profiles battle with unique stats, archetypes, and
+          special moves!
         </div>
       </div>
     ),

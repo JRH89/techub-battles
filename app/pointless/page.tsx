@@ -46,7 +46,7 @@ export default function PointlessPage() {
             🎭 Developer Excuse Generator
           </h1>
           <p className="text-xl text-purple-200">
-            For when your code doesn't work and you need a good reason
+            For when your code doesn&apos;t work and you need a good reason
           </p>
         </div>
 
@@ -77,7 +77,7 @@ export default function PointlessPage() {
               {/* Excuse Text */}
               <div className="bg-white/5 rounded-xl p-6 border border-white/10">
                 <p className="text-3xl font-bold text-white text-center leading-relaxed">
-                  "{excuse.excuse}"
+                  &quot;{excuse.excuse}&quot;
                 </p>
               </div>
 
@@ -116,7 +116,10 @@ export default function PointlessPage() {
                   disabled={loading}
                   className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg flex items-center justify-center gap-2"
                 >
-                  <RefreshCw className={loading ? 'animate-spin' : ''} size={20} />
+                  <RefreshCw
+                    className={loading ? 'animate-spin' : ''}
+                    size={20}
+                  />
                   New Excuse
                 </button>
                 <button

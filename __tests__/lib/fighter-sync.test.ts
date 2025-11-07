@@ -67,7 +67,9 @@ describe('Fighter Sync', () => {
     it('should handle Firestore errors gracefully', async () => {
       (getDocs as jest.Mock).mockRejectedValue(new Error('Firestore error'));
 
-      await expect(getFightersFromFirestore()).rejects.toThrow('Firestore error');
+      await expect(getFightersFromFirestore()).rejects.toThrow(
+        'Firestore error'
+      );
     });
   });
 

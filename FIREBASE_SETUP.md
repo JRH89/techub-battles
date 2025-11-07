@@ -1,7 +1,9 @@
 # Firebase Setup for TecHub Battles
 
 ## Overview
+
 Firebase Firestore serves two critical functions in TecHub Battles:
+
 1. **Battle Result Storage** - Immutable battle records for leaderboard tracking
 2. **Intelligent Caching Layer** - Fighter data and sync status for offline capability and performance
 
@@ -10,6 +12,7 @@ This keeps battle data separate from the main Rails database and allows for high
 ## Setup Steps
 
 ### 1. Create Firebase Project
+
 1. Go to https://console.firebase.google.com
 2. Click "Add project"
 3. Name it `techub-battles` (or your preferred name)
@@ -17,6 +20,7 @@ This keeps battle data separate from the main Rails database and allows for high
 5. Click "Create project"
 
 ### 2. Enable Firestore Database
+
 1. In Firebase Console, go to "Build" → "Firestore Database"
 2. Click "Create database"
 3. Choose "Start in production mode" (we'll add security rules)
@@ -24,6 +28,7 @@ This keeps battle data separate from the main Rails database and allows for high
 5. Click "Enable"
 
 ### 3. Get Firebase Config
+
 1. Go to Project Settings (gear icon)
 2. Scroll to "Your apps" section
 3. Click the web icon `</>`
@@ -31,6 +36,7 @@ This keeps battle data separate from the main Rails database and allows for high
 5. Copy the config values
 
 ### 4. Add Config to .env.local
+
 ```bash
 NEXT_PUBLIC_FIREBASE_API_KEY=AIza...
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=techub-battles.firebaseapp.com
@@ -41,6 +47,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=1:123456789:web:abc123
 ```
 
 ### 5. Set Firestore Security Rules
+
 In Firebase Console → Firestore Database → Rules:
 
 ```javascript
@@ -53,22 +60,22 @@ service cloud.firestore {
       allow read: if true;
       allow update, delete: if false;
     }
-    
+
     // Fighter data cache - public read/write for sync
     match /fighters/{fighterId} {
       allow create, read, update, delete: if true;
     }
-    
+
     // Game data cache - public read/write
     match /game_data/{gameId} {
       allow create, read, update, delete: if true;
     }
-    
+
     // Sync status tracking - public read/write
     match /sync_status/{syncId} {
       allow create, read, update, delete: if true;
     }
-    
+
     // Future: Add authentication for user-specific data
     // match /users/{userId} {
     //   allow read, write: if request.auth != null && request.auth.uid == userId;
@@ -78,6 +85,7 @@ service cloud.firestore {
 ```
 
 ### 6. Create Firestore Indexes (Recommended)
+
 For better query performance, create these composite indexes:
 
 1. **Battle Leaderboard Indexes**
@@ -93,6 +101,7 @@ For better query performance, create these composite indexes:
 ## Data Structure
 
 ### Battle Document
+
 ```typescript
 {
   timestamp: Timestamp,
@@ -123,6 +132,7 @@ For better query performance, create these composite indexes:
 ```
 
 ### Fighter Document (Cache)
+
 ```typescript
 {
   profile: {
@@ -150,6 +160,7 @@ For better query performance, create these composite indexes:
 ```
 
 ### Game Data Document (Cache)
+
 ```typescript
 {
   archetypes: string[],
@@ -187,6 +198,7 @@ For better query performance, create these composite indexes:
 ```
 
 ### Sync Status Document
+
 ```typescript
 {
   last_sync: Timestamp,        // Global fighter sync timestamp
@@ -198,6 +210,7 @@ For better query performance, create these composite indexes:
 ## Intelligent Caching System
 
 ### Incremental Sync Process
+
 1. **Check Sync Status**: Read `sync_status/fighters` for last sync time
 2. **Fetch All Fighters**: Get all fighters from Rails API (existing endpoint)
 3. **Compare Timestamps**: Only update fighters with newer `updated_at`
@@ -205,6 +218,7 @@ For better query performance, create these composite indexes:
 5. **Update Sync Status**: Record successful sync timestamp
 
 ### Fallback Strategy
+
 - **First Visit**: Full sync from Rails API
 - **Subsequent Visits**: Incremental sync (80-90% fewer API calls)
 - **Rails Offline**: Use cached data with user notification
@@ -213,12 +227,15 @@ For better query performance, create these composite indexes:
 ## Rails Integration
 
 ### Option 1: Firebase Admin SDK (Recommended)
+
 Install in Rails:
+
 ```ruby
 gem 'firebase-admin-sdk'
 ```
 
 Query battles:
+
 ```ruby
 require 'firebase_admin'
 
@@ -238,7 +255,9 @@ battles = db.col('battles')
 ```
 
 ### Option 2: REST API
+
 Query via HTTP:
+
 ```ruby
 require 'net/http'
 require 'json'
@@ -251,6 +270,7 @@ battles = JSON.parse(response)
 ## Scaling Considerations
 
 ### Current Setup (Good for 100k+ battles/month)
+
 - ✅ Client-side writes (no server load)
 - ✅ Immutable battle records (no updates/deletes)
 - ✅ Indexed queries for leaderboards
@@ -259,6 +279,7 @@ battles = JSON.parse(response)
 - ✅ Offline capability with graceful degradation
 
 ### Future Optimizations
+
 1. **Batch writes** - Already implemented for fighter sync
 2. **Cloud Functions** - Auto-aggregate leaderboard stats
 3. **Caching** - Cache leaderboard in Redis
@@ -268,18 +289,21 @@ battles = JSON.parse(response)
 ## Cost Estimates
 
 ### Firestore Pricing (Free Tier)
+
 - 50k reads/day
 - 20k writes/day
 - 20k deletes/day
 - 1 GB storage
 
 ### Estimated Usage with Caching
+
 - **Battle Results**: 1000 battles/day = 1000 writes
 - **Leaderboard Queries**: ~5000 reads/day
 - **Fighter Sync**: 100 writes/day (incremental)
 - **Total**: Well within free tier!
 
 ### Cost Comparison
+
 - **Without Caching**: 20k+ API calls/day to Rails
 - **With Caching**: 2k API calls/day (90% reduction)
 - **Savings**: ~90% on Rails API costs
@@ -287,6 +311,7 @@ battles = JSON.parse(response)
 ## Security Best Practices
 
 ### ✅ Current Implementation
+
 - Public battle writes (anyone can save battles)
 - No PII stored (just usernames and battle data)
 - Immutable battle records (can't edit history)
@@ -294,6 +319,7 @@ battles = JSON.parse(response)
 - Rate limiting via Firestore rules (future)
 
 ### 🔒 Future Enhancements
+
 1. **Add reCAPTCHA** - Prevent bot spam on battle submissions
 2. **Rate limiting** - Max battles per IP/hour
 3. **Authentication** - Optional user accounts for features
@@ -302,12 +328,14 @@ battles = JSON.parse(response)
 ## Monitoring
 
 ### Firebase Console
+
 - Monitor writes/reads in Usage tab
 - Check errors in Firestore logs
 - Set up budget alerts
 - Track cache hit/miss ratios
 
 ### Application Logs
+
 - Battle saves logged to Firebase
 - Sync operations tracked with success/failure
 - Failed syncs fall back gracefully to cached data
@@ -316,23 +344,27 @@ battles = JSON.parse(response)
 ## Troubleshooting
 
 ### "Permission denied" errors
+
 - Check Firestore security rules
 - Verify API key in .env.local
 - Ensure collections exist (auto-created on first write)
 
 ### Slow sync performance
+
 - Use batch writes (already implemented)
 - Check Firestore indexes
 - Monitor network connectivity
 - Consider reducing sync frequency
 
 ### High costs
+
 - Review usage in Firebase Console
 - Check sync efficiency (should be 90% cache hits)
 - Archive old battles
 - Optimize query patterns
 
 ### Cache staleness
+
 - Check sync status timestamps
 - Verify Rails API `updated_at` fields
 - Implement force sync functionality
@@ -341,6 +373,7 @@ battles = JSON.parse(response)
 ---
 
 **Recent Updates (November 2024):**
+
 - Added incremental fighter sync system
 - Implemented intelligent caching with 24-hour freshness
 - Added sync status tracking for reliability

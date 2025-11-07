@@ -5,23 +5,23 @@ export function isFromTwitter(): boolean {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     return false;
   }
-  
+
   try {
     const referrer = document.referrer.toLowerCase();
     const userAgent = navigator.userAgent.toLowerCase();
-    
+
     // Check referrer for twitter/x.com
     if (referrer.includes('twitter.com') || referrer.includes('x.com')) {
       return true;
     }
-    
+
     // Check user agent for Twitter in-app browser
     if (userAgent.includes('twitter') || userAgent.includes('x.com')) {
       return true;
     }
-    
+
     return false;
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }

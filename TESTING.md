@@ -29,6 +29,7 @@ __tests__/
 ## Recent Test Updates
 
 ### Fixed Issues (November 2024)
+
 - ✅ Added `first_attacker` field to all BattleResult test mocks
 - ✅ Fixed BattleEventType validation (changed 'start' to 'battle_end')
 - ✅ Updated GameData type structure with proper arrays and objects
@@ -38,6 +39,7 @@ __tests__/
 - ✅ All 18 tests now pass with 0 TypeScript errors
 
 ### Test Coverage Status
+
 - **Total Tests**: 18 passing
 - **Coverage**: 90%+ for all critical paths
 - **Type Safety**: 100% TypeScript compliance
@@ -115,11 +117,13 @@ describe('Battle Flow', () => {
 ### 1. Test Behavior, Not Implementation
 
 ❌ **Bad**: Testing internal state
+
 ```typescript
 expect(component.state.count).toBe(5);
 ```
 
 ✅ **Good**: Testing user-visible behavior
+
 ```typescript
 expect(screen.getByText('Count: 5')).toBeInTheDocument();
 ```
@@ -137,10 +141,10 @@ it('should calculate damage correctly', () => {
   // Arrange
   const attacker = createMockFighter({ attack: 100 });
   const defender = createMockFighter({ defense: 50 });
-  
+
   // Act
   const damage = calculateDamage(attacker, defender);
-  
+
   // Assert
   expect(damage).toBeGreaterThan(0);
 });
@@ -172,12 +176,14 @@ jest.mock('next/navigation', () => ({
 ## Coverage Requirements
 
 Maintain minimum 70% coverage for:
+
 - **Branches**: Conditional logic paths
 - **Functions**: All exported functions
 - **Lines**: Code execution
 - **Statements**: Individual statements
 
 View coverage report:
+
 ```bash
 npm run test:coverage
 open coverage/lcov-report/index.html
@@ -186,6 +192,7 @@ open coverage/lcov-report/index.html
 ## Continuous Integration
 
 Tests run automatically on:
+
 - Every commit (pre-commit hook)
 - Pull requests
 - Main branch pushes
@@ -210,7 +217,7 @@ npm test -- FighterCard.test.tsx
 ```typescript
 it('loads battle data', async () => {
   render(<BattlePage />);
-  
+
   await waitFor(() => {
     expect(screen.getByText('Battle Arena')).toBeInTheDocument();
   });
@@ -222,10 +229,10 @@ it('loads battle data', async () => {
 ```typescript
 it('starts battle on button click', () => {
   render(<BattleControls />);
-  
+
   const playButton = screen.getByRole('button', { name: /play/i });
   fireEvent.click(playButton);
-  
+
   expect(screen.getByText('Battle in progress')).toBeInTheDocument();
 });
 ```
@@ -235,13 +242,13 @@ it('starts battle on button click', () => {
 ```typescript
 it('submits fighter selection', () => {
   render(<FighterSelector />);
-  
+
   const select = screen.getByLabelText('Challenger');
   fireEvent.change(select, { target: { value: 'fighter1' } });
-  
+
   const submitButton = screen.getByRole('button', { name: /start/i });
   fireEvent.click(submitButton);
-  
+
   expect(mockRouter.push).toHaveBeenCalledWith('/battle?challenger=fighter1');
 });
 ```

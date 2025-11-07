@@ -9,7 +9,8 @@ export default function AboutPage() {
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
           <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-pink-600 mb-3 sm:mb-4 px-2">
-            <span className="hidden sm:inline">⚔️ </span>About TecHub Battles<span className="hidden sm:inline"> ⚔️</span>
+            <span className="hidden sm:inline">⚔️ </span>About TecHub Battles
+            <span className="hidden sm:inline"> ⚔️</span>
           </h1>
           <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 px-4">
             Epic battles between TecHub profiles
@@ -27,7 +28,10 @@ export default function AboutPage() {
               </h2>
             </div>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-              TecHub Battles is a fun, interactive battle system where TecHub profiles compete against each other in epic showdowns. Each profile has unique stats, archetypes, spirit animals, and special moves that determine their fighting style and abilities.
+              TecHub Battles is a fun, interactive battle system where TecHub
+              profiles compete against each other in epic showdowns. Each
+              profile has unique stats, archetypes, spirit animals, and special
+              moves that determine their fighting style and abilities.
             </p>
           </div>
 
@@ -42,23 +46,38 @@ export default function AboutPage() {
             <ul className="space-y-3 text-slate-600 dark:text-slate-400">
               <li className="flex items-start gap-3">
                 <span className="text-blue-600 font-bold">1.</span>
-                <span><strong>Choose Your Fighters:</strong> Select two battle-ready profiles from the TecHub community</span>
+                <span>
+                  <strong>Choose Your Fighters:</strong> Select two battle-ready
+                  profiles from the TecHub community
+                </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-blue-600 font-bold">2.</span>
-                <span><strong>Battle Simulation:</strong> Watch as fighters use their unique stats, archetypes, and special moves</span>
+                <span>
+                  <strong>Battle Simulation:</strong> Watch as fighters use
+                  their unique stats, archetypes, and special moves
+                </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-blue-600 font-bold">3.</span>
-                <span><strong>Special Moves:</strong> Every 3 turns, fighters unleash powerful special attacks with damage bonuses</span>
+                <span>
+                  <strong>Special Moves:</strong> Every 3 turns, fighters
+                  unleash powerful special attacks with damage bonuses
+                </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-blue-600 font-bold">4.</span>
-                <span><strong>Type Advantages:</strong> Archetypes have strengths and weaknesses against each other</span>
+                <span>
+                  <strong>Type Advantages:</strong> Archetypes have strengths
+                  and weaknesses against each other
+                </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-blue-600 font-bold">5.</span>
-                <span><strong>Spirit Animals:</strong> Provide stat modifiers that enhance fighter abilities</span>
+                <span>
+                  <strong>Spirit Animals:</strong> Provide stat modifiers that
+                  enhance fighter abilities
+                </span>
               </li>
             </ul>
           </div>
@@ -75,29 +94,45 @@ export default function AboutPage() {
               <div className="flex items-start gap-3">
                 <div className="text-2xl">⚔️</div>
                 <div>
-                  <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-1">Real-time Battles</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">Watch battles unfold with animated attacks and special moves</p>
+                  <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-1">
+                    Real-time Battles
+                  </h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Watch battles unfold with animated attacks and special moves
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <div className="text-2xl">📊</div>
                 <div>
-                  <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-1">Detailed Stats</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">Attack, Defense, Speed, and unique player traits</p>
+                  <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-1">
+                    Detailed Stats
+                  </h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Attack, Defense, Speed, and unique player traits
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <div className="text-2xl">✨</div>
                 <div>
-                  <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-1">Special Moves</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">Unique abilities with charge bars and visual effects</p>
+                  <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-1">
+                    Special Moves
+                  </h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Unique abilities with charge bars and visual effects
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <div className="text-2xl">🏆</div>
                 <div>
-                  <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-1">Leaderboard</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">Track wins, losses, and climb the rankings</p>
+                  <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-1">
+                    Leaderboard
+                  </h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Track wins, losses, and climb the rankings
+                  </p>
                 </div>
               </div>
             </div>
@@ -107,15 +142,16 @@ export default function AboutPage() {
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
             <div className="flex items-center gap-3 mb-4">
               <Users className="h-8 w-8" />
-              <h2 className="text-2xl font-bold">
-                Part of TecHub
-              </h2>
+              <h2 className="text-2xl font-bold">Part of TecHub</h2>
             </div>
             <p className="mb-6 opacity-90">
-              TecHub Battles is part of the TecHub ecosystem - a community platform for developers and tech enthusiasts. Visit TecHub to create your profile, customize your fighter card, and join the community!
+              TecHub Battles is part of the TecHub ecosystem - a community
+              platform for developers and tech enthusiasts. Visit TecHub to
+              create your profile, customize your fighter card, and join the
+              community!
             </p>
-            <a 
-              href="https://techub.life" 
+            <a
+              href="https://techub.life"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full bg-white text-blue-600 px-6 py-3 font-bold hover:bg-slate-100 transition shadow-lg"
@@ -127,7 +163,9 @@ export default function AboutPage() {
           {/* Made with love */}
           <div className="text-center py-8">
             <p className="text-slate-600 dark:text-slate-400 flex items-center justify-center gap-2">
-              Made with <Heart className="h-5 w-5 text-red-500" fill="currentColor" /> for the TecHub community
+              Made with{' '}
+              <Heart className="h-5 w-5 text-red-500" fill="currentColor" /> for
+              the TecHub community
             </p>
           </div>
         </div>

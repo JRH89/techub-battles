@@ -1,13 +1,13 @@
-import { 
-  doc, 
-  setDoc, 
-  getDoc, 
-  getDocs, 
-  collection, 
-  query, 
-  limit, 
-  writeBatch, 
-  deleteDoc 
+import {
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+  collection,
+  query,
+  limit,
+  writeBatch,
+  deleteDoc,
 } from 'firebase/firestore';
 import { db } from './firebase';
 import type { Fighter, GameData } from './types';
@@ -20,16 +20,16 @@ import { techubAPI } from './techub-api';
 export async function syncGameDataFromRails(): Promise<boolean> {
   try {
     // Syncing game data from Rails...
-    
+
     // Fetch game data from Rails
     const gameData = await techubAPI.getGameData();
-    
+
     // Save to Firestore
     await setDoc(doc(db, 'game_data', 'current'), {
       ...gameData,
       last_synced: new Date(),
     });
-    
+
     // Game data synced to Firestore
     return true;
   } catch (error) {
@@ -50,60 +50,65 @@ export async function syncFightersFromRails(): Promise<boolean> {
   try {
     // Get all fighters from Rails (existing endpoint)
     const railsFighters = await techubAPI.getBattleReadyProfiles();
-    
+
     if (railsFighters.length === 0) {
       return true; // No fighters to sync
     }
-    
+
     // Get existing fighters from Firestore to compare
     const fightersRef = collection(db, 'fighters');
     const existingFightersSnapshot = await getDocs(fightersRef);
-    
+
     // Create map of existing fighters for quick lookup
     const existingFighters = new Map();
-    existingFightersSnapshot.forEach(doc => {
+    existingFightersSnapshot.forEach((doc) => {
       const data = doc.data();
       existingFighters.set(doc.id, {
         last_updated: data.last_updated?.toDate(),
-        data: data
+        data: data,
       });
     });
-    
+
     // Batch operations for efficiency
     const batch = writeBatch(db);
     let updatesCount = 0;
-    
+
     for (const fighter of railsFighters) {
       const fighterId = fighter.profile.login;
       const existingFighter = existingFighters.get(fighterId);
-      
+
       // Parse updated_at from Rails fighter (assuming it's included)
       const railsUpdatedAt = new Date(fighter.profile.updated_at || Date.now());
-      
+
       // Check if fighter is new or updated
-      const needsUpdate = !existingFighter || 
-        !existingFighter.last_updated || 
+      const needsUpdate =
+        !existingFighter ||
+        !existingFighter.last_updated ||
         railsUpdatedAt > existingFighter.last_updated;
-      
+
       if (needsUpdate) {
         const fighterDoc = doc(fightersRef, fighterId);
-        batch.set(fighterDoc, {
-          profile: fighter.profile,
-          card: fighter.card,
-          last_synced: new Date(),
-          last_updated: railsUpdatedAt,
-        }, { merge: true });
+        batch.set(
+          fighterDoc,
+          {
+            profile: fighter.profile,
+            card: fighter.card,
+            last_synced: new Date(),
+            last_updated: railsUpdatedAt,
+          },
+          { merge: true }
+        );
         updatesCount++;
       }
     }
-    
+
     // Only execute batch if there are updates
     if (updatesCount > 0) {
       await batch.commit();
       // Update sync timestamp
       await updateLastSyncTimestamp();
     }
-    
+
     return true;
   } catch (error) {
     // Error syncing fighters from Rails
@@ -118,14 +123,14 @@ export async function syncFightersFromRails(): Promise<boolean> {
 /**
  * Get the last sync timestamp from Firestore
  */
-async function getLastSyncTimestamp(): Promise<Date | null> {
+async function _getLastSyncTimestamp(): Promise<Date | null> {
   try {
     const syncDoc = await getDoc(doc(db, 'sync_status', 'fighters'));
     if (syncDoc.exists()) {
       return syncDoc.data()?.last_sync?.toDate() || null;
     }
     return null;
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 }
@@ -135,11 +140,15 @@ async function getLastSyncTimestamp(): Promise<Date | null> {
  */
 async function updateLastSyncTimestamp(): Promise<void> {
   try {
-    await setDoc(doc(db, 'sync_status', 'fighters'), {
-      last_sync: new Date(),
-      last_sync_count: new Date(),
-    }, { merge: true });
-  } catch (error) {
+    await setDoc(
+      doc(db, 'sync_status', 'fighters'),
+      {
+        last_sync: new Date(),
+        last_sync_count: new Date(),
+      },
+      { merge: true }
+    );
+  } catch (_error) {
     // Don't throw - sync can continue without updating timestamp
   }
 }
@@ -151,10 +160,10 @@ export async function forceFullSync(): Promise<boolean> {
   try {
     // Clear sync status to force full comparison
     await deleteDoc(doc(db, 'sync_status', 'fighters'));
-    
+
     // Run normal sync - it will treat all fighters as "new"
     return await syncFightersFromRails();
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }
@@ -164,18 +173,20 @@ export async function forceFullSync(): Promise<boolean> {
  */
 export async function getGameDataFromFirestore(): Promise<GameData | null> {
   try {
-    const gameDataDoc = await getDocs(query(collection(db, 'game_data'), limit(1)));
-    
+    const gameDataDoc = await getDocs(
+      query(collection(db, 'game_data'), limit(1))
+    );
+
     if (gameDataDoc.empty) {
       // No game data found in Firestore
       return null;
     }
-    
+
     const data = gameDataDoc.docs[0].data();
-    
+
     // Raw Firestore game data
     // Archetype abilities keys
-    
+
     return {
       archetypes: data.archetypes,
       type_chart: data.type_chart,
@@ -196,8 +207,8 @@ export async function getFightersFromFirestore(): Promise<Fighter[]> {
   try {
     const fightersRef = collection(db, 'fighters');
     const snapshot = await getDocs(fightersRef);
-    
-    return snapshot.docs.map(doc => ({
+
+    return snapshot.docs.map((doc) => ({
       profile: doc.data().profile,
       card: doc.data().card,
     }));
@@ -216,16 +227,15 @@ export async function shouldSyncFighters(): Promise<boolean> {
     const fightersRef = collection(db, 'fighters');
     const q = query(fightersRef, limit(1));
     const snapshot = await getDocs(q);
-    
+
     // If no fighters, need to sync
     if (snapshot.empty) {
       return true;
     }
-    
+
     // Always sync if fighters exist - let API handle caching with 304 responses
     return true;
-    
-  } catch (error) {
+  } catch (_error) {
     // Error checking sync status
     return true; // Sync on error to be safe
   }

@@ -18,10 +18,11 @@ export default function DirectoryPage() {
 
   useEffect(() => {
     if (searchQuery) {
-      const filtered = fighters.filter(f => 
-        f.profile.login.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        f.profile.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        f.card.archetype.toLowerCase().includes(searchQuery.toLowerCase())
+      const filtered = fighters.filter(
+        (f) =>
+          f.profile.login.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          f.profile.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          f.card.archetype.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredFighters(filtered);
     } else {
@@ -47,7 +48,8 @@ export default function DirectoryPage() {
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
           <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-pink-600 mb-3 sm:mb-4 px-2">
-            <span className="hidden sm:inline">👥 </span>Fighter Directory<span className="hidden sm:inline"> 👥</span>
+            <span className="hidden sm:inline">👥 </span>Fighter Directory
+            <span className="hidden sm:inline"> 👥</span>
           </h1>
           <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 px-4">
             Browse all battle-ready fighters
@@ -72,7 +74,9 @@ export default function DirectoryPage() {
         {loading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-slate-600 dark:text-slate-400">Loading fighters...</p>
+            <p className="mt-4 text-slate-600 dark:text-slate-400">
+              Loading fighters...
+            </p>
           </div>
         ) : filteredFighters.length === 0 ? (
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-12 text-center">
@@ -81,13 +85,16 @@ export default function DirectoryPage() {
               No fighters found
             </h3>
             <p className="text-slate-600 dark:text-slate-400">
-              {searchQuery ? 'Try a different search term' : 'No battle-ready fighters available'}
+              {searchQuery
+                ? 'Try a different search term'
+                : 'No battle-ready fighters available'}
             </p>
           </div>
         ) : (
           <>
             <p className="text-center text-slate-600 dark:text-slate-400 mb-6">
-              Showing {filteredFighters.length} fighter{filteredFighters.length !== 1 ? 's' : ''}
+              Showing {filteredFighters.length} fighter
+              {filteredFighters.length !== 1 ? 's' : ''}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredFighters.map((fighter) => (
@@ -132,16 +139,28 @@ export default function DirectoryPage() {
                   {/* Stats */}
                   <div className="grid grid-cols-3 gap-2 text-center text-xs">
                     <div>
-                      <div className="text-red-600 dark:text-red-400 font-bold">ATK</div>
-                      <div className="text-slate-900 dark:text-slate-100 font-bold">{fighter.card.attack}</div>
+                      <div className="text-red-600 dark:text-red-400 font-bold">
+                        ATK
+                      </div>
+                      <div className="text-slate-900 dark:text-slate-100 font-bold">
+                        {fighter.card.attack}
+                      </div>
                     </div>
                     <div>
-                      <div className="text-blue-600 dark:text-blue-400 font-bold">DEF</div>
-                      <div className="text-slate-900 dark:text-slate-100 font-bold">{fighter.card.defense}</div>
+                      <div className="text-blue-600 dark:text-blue-400 font-bold">
+                        DEF
+                      </div>
+                      <div className="text-slate-900 dark:text-slate-100 font-bold">
+                        {fighter.card.defense}
+                      </div>
                     </div>
                     <div>
-                      <div className="text-yellow-600 dark:text-yellow-400 font-bold">SPD</div>
-                      <div className="text-slate-900 dark:text-slate-100 font-bold">{fighter.card.speed}</div>
+                      <div className="text-yellow-600 dark:text-yellow-400 font-bold">
+                        SPD
+                      </div>
+                      <div className="text-slate-900 dark:text-slate-100 font-bold">
+                        {fighter.card.speed}
+                      </div>
                     </div>
                   </div>
                 </Link>

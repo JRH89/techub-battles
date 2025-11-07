@@ -48,7 +48,10 @@ export class BattleEngine {
   /**
    * Get type advantage multiplier
    */
-  private getTypeMultiplier(attackerArchetype: string, defenderArchetype: string): number {
+  private getTypeMultiplier(
+    attackerArchetype: string,
+    defenderArchetype: string
+  ): number {
     const typeChart = this.gameData.type_chart[attackerArchetype];
     if (!typeChart) return this.gameData.mechanics.type_multipliers.neutral;
 
@@ -83,12 +86,18 @@ export class BattleEngine {
     const randomFactor = Math.random() * (variance * 2) + (1 - variance);
 
     // Type advantage
-    const typeMultiplier = this.getTypeMultiplier(attackerArchetype, defenderArchetype);
+    const typeMultiplier = this.getTypeMultiplier(
+      attackerArchetype,
+      defenderArchetype
+    );
 
     // Final damage
     const finalDamage = baseDamage * randomFactor * typeMultiplier;
 
-    return Math.max(this.gameData.mechanics.minimum_damage, Math.round(finalDamage * 10) / 10);
+    return Math.max(
+      this.gameData.mechanics.minimum_damage,
+      Math.round(finalDamage * 10) / 10
+    );
   }
 
   /**
@@ -105,19 +114,28 @@ export class BattleEngine {
 
     // Magician: +10% damage vs weak types
     if (attackerArchetype === 'The Magician') {
-      const typeMultiplier = this.getTypeMultiplier(attackerArchetype, defenderArchetype);
+      const typeMultiplier = this.getTypeMultiplier(
+        attackerArchetype,
+        defenderArchetype
+      );
       if (typeMultiplier === this.gameData.mechanics.type_multipliers.strong) {
         attackerBonus *= 1.1;
       }
     }
 
     // Hero: +5% defense when below 50% HP
-    if (defenderArchetype === 'The Hero' && defenderStats.hp < defenderStats.maxHp * 0.5) {
+    if (
+      defenderArchetype === 'The Hero' &&
+      defenderStats.hp < defenderStats.maxHp * 0.5
+    ) {
       defenderBonus *= 1.05;
     }
 
     // Ruler: +10% all stats when HP > 75%
-    if (attackerArchetype === 'The Ruler' && attackerStats.hp > attackerStats.maxHp * 0.75) {
+    if (
+      attackerArchetype === 'The Ruler' &&
+      attackerStats.hp > attackerStats.maxHp * 0.75
+    ) {
       attackerBonus *= 1.1;
     }
 
@@ -133,7 +151,10 @@ export class BattleEngine {
   /**
    * Determine turn order based on speed
    */
-  private determineTurnOrder(): { first: 'challenger' | 'opponent'; second: 'challenger' | 'opponent' } {
+  private determineTurnOrder(): {
+    first: 'challenger' | 'opponent';
+    second: 'challenger' | 'opponent';
+  } {
     if (this.challengerStats.speed > this.opponentStats.speed) {
       return { first: 'challenger', second: 'opponent' };
     } else if (this.opponentStats.speed > this.challengerStats.speed) {
@@ -152,10 +173,14 @@ export class BattleEngine {
    */
   private getSpecialMoveBonus(archetype: string): number {
     const abilities = this.gameData.archetype_abilities[archetype];
-    if (!abilities || !abilities.special_moves || abilities.special_moves.length === 0) {
+    if (
+      !abilities ||
+      !abilities.special_moves ||
+      abilities.special_moves.length === 0
+    ) {
       return 1.0; // No bonus
     }
-    
+
     // Use the first special move's damage bonus
     const firstMove = abilities.special_moves[0];
     return firstMove.damage_bonus || 1.0;
@@ -168,13 +193,20 @@ export class BattleEngine {
     attacker: 'challenger' | 'opponent',
     defender: 'challenger' | 'opponent'
   ): void {
-    const attackerFighter = attacker === 'challenger' ? this.challenger : this.opponent;
-    const defenderFighter = defender === 'challenger' ? this.challenger : this.opponent;
-    const attackerStats = attacker === 'challenger' ? this.challengerStats : this.opponentStats;
-    const defenderStats = defender === 'challenger' ? this.challengerStats : this.opponentStats;
+    const attackerFighter =
+      attacker === 'challenger' ? this.challenger : this.opponent;
+    const defenderFighter =
+      defender === 'challenger' ? this.challenger : this.opponent;
+    const attackerStats =
+      attacker === 'challenger' ? this.challengerStats : this.opponentStats;
+    const defenderStats =
+      defender === 'challenger' ? this.challengerStats : this.opponentStats;
 
     // Check for Jester dodge (10% chance)
-    if (defenderFighter.card.archetype === 'The Jester' && Math.random() < 0.1) {
+    if (
+      defenderFighter.card.archetype === 'The Jester' &&
+      Math.random() < 0.1
+    ) {
       this.battleLog.push({
         type: 'passive_trigger',
         turn: this.turn,
@@ -189,10 +221,12 @@ export class BattleEngine {
     const useSpecialMove = this.turn > 1 && this.turn % 3 === 0;
     const specialMoveName = attackerFighter.card.special_move; // Custom player name
     let specialMoveBonus = 1.0;
-    
+
     if (useSpecialMove) {
       // Get damage bonus from archetype (not from move name)
-      specialMoveBonus = this.getSpecialMoveBonus(attackerFighter.card.archetype);
+      specialMoveBonus = this.getSpecialMoveBonus(
+        attackerFighter.card.archetype
+      );
     }
 
     // Calculate type advantage
@@ -268,13 +302,19 @@ export class BattleEngine {
    * Apply Caregiver regeneration
    */
   private applyRegeneration(): void {
-    if (this.challenger.card.archetype === 'The Caregiver' && this.challengerStats.hp > 0) {
+    if (
+      this.challenger.card.archetype === 'The Caregiver' &&
+      this.challengerStats.hp > 0
+    ) {
       this.challengerStats.hp = Math.min(
         this.challengerStats.maxHp,
         this.challengerStats.hp + 2
       );
     }
-    if (this.opponent.card.archetype === 'The Caregiver' && this.opponentStats.hp > 0) {
+    if (
+      this.opponent.card.archetype === 'The Caregiver' &&
+      this.opponentStats.hp > 0
+    ) {
       this.opponentStats.hp = Math.min(
         this.opponentStats.maxHp,
         this.opponentStats.hp + 2
@@ -297,12 +337,17 @@ export class BattleEngine {
       this.challenger.card.archetype,
       this.opponent.card.archetype
     );
-    if (challengerTypeMultiplier === this.gameData.mechanics.type_multipliers.strong) {
+    if (
+      challengerTypeMultiplier ===
+      this.gameData.mechanics.type_multipliers.strong
+    ) {
       this.battleLog.push({
         type: 'type_advantage',
         message: `${this.challenger.card.archetype} has type advantage over ${this.opponent.card.archetype}!`,
       });
-    } else if (challengerTypeMultiplier === this.gameData.mechanics.type_multipliers.weak) {
+    } else if (
+      challengerTypeMultiplier === this.gameData.mechanics.type_multipliers.weak
+    ) {
       this.battleLog.push({
         type: 'type_advantage',
         message: `${this.opponent.card.archetype} has type advantage over ${this.challenger.card.archetype}!`,
@@ -311,7 +356,10 @@ export class BattleEngine {
 
     // Speed check
     const turnOrder = this.determineTurnOrder();
-    const firstAttacker = turnOrder.first === 'challenger' ? this.challenger.profile.login : this.opponent.profile.login;
+    const firstAttacker =
+      turnOrder.first === 'challenger'
+        ? this.challenger.profile.login
+        : this.opponent.profile.login;
     this.battleLog.push({
       type: 'speed_check',
       message: `${firstAttacker} moves first! (Speed: ${Math.round(turnOrder.first === 'challenger' ? this.challengerStats.speed : this.opponentStats.speed)})`,
@@ -342,9 +390,13 @@ export class BattleEngine {
 
     // Determine winner
     const winner =
-      this.challengerStats.hp > this.opponentStats.hp ? this.challenger : this.opponent;
+      this.challengerStats.hp > this.opponentStats.hp
+        ? this.challenger
+        : this.opponent;
     const loser =
-      this.challengerStats.hp > this.opponentStats.hp ? this.opponent : this.challenger;
+      this.challengerStats.hp > this.opponentStats.hp
+        ? this.opponent
+        : this.challenger;
 
     this.battleLog.push({
       type: 'battle_end',

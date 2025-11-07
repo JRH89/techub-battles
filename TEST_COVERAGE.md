@@ -9,6 +9,7 @@
 ### ✅ **Unit Tests - Business Logic (lib/)**
 
 #### `battle-engine.test.ts` - 10 tests
+
 - ✅ determineFirstAttacker - speed comparison
 - ✅ determineFirstAttacker - equal speeds (random)
 - ✅ calculateDamage - base damage
@@ -21,6 +22,7 @@
 - ✅ simulateBattle - high defense edge case
 
 #### `battle-storage.test.ts` - 5 tests
+
 - ✅ saveBattleResult - Firestore save operation
 - ✅ saveBattleResult - winner/loser stats calculation
 - ✅ saveBattleResult - error handling (graceful failure)
@@ -28,6 +30,7 @@
 - ✅ saveBattleResult - server timestamp inclusion
 
 #### `fighter-sync.test.ts` - 6 tests
+
 - ✅ getFightersFromFirestore - fetch and parse
 - ✅ getFightersFromFirestore - empty collection
 - ✅ getFightersFromFirestore - error handling
@@ -39,6 +42,7 @@
 ### ✅ **Component Tests (components/)**
 
 #### `FighterCard.test.tsx` - 6 tests
+
 - ✅ Renders fighter information
 - ✅ Displays stats (ATK/DEF/SPD)
 - ✅ HP bar with correct percentage
@@ -48,20 +52,21 @@
 
 ## Coverage by Area
 
-| Area | Status | Tests | Notes |
-|------|--------|-------|-------|
-| **Battle Engine** | ✅ Complete | 10 | Core logic fully tested |
-| **Battle Storage** | ✅ Complete | 5 | Firebase operations covered |
-| **Fighter Sync** | ✅ Complete | 6 | TecHub API & Firestore |
-| **FighterCard Component** | ✅ Complete | 6 | Rendering & states |
-| **BattleArena Component** | ⚠️ Partial | 0 | Needs integration tests |
-| **Navigation Components** | ❌ Missing | 0 | Navbar, Footer |
-| **Pages** | ❌ Missing | 0 | Home, Battle, Leaderboard, etc. |
-| **Integration Tests** | ❌ Missing | 0 | End-to-end workflows |
+| Area                      | Status      | Tests | Notes                           |
+| ------------------------- | ----------- | ----- | ------------------------------- |
+| **Battle Engine**         | ✅ Complete | 10    | Core logic fully tested         |
+| **Battle Storage**        | ✅ Complete | 5     | Firebase operations covered     |
+| **Fighter Sync**          | ✅ Complete | 6     | TecHub API & Firestore          |
+| **FighterCard Component** | ✅ Complete | 6     | Rendering & states              |
+| **BattleArena Component** | ⚠️ Partial  | 0     | Needs integration tests         |
+| **Navigation Components** | ❌ Missing  | 0     | Navbar, Footer                  |
+| **Pages**                 | ❌ Missing  | 0     | Home, Battle, Leaderboard, etc. |
+| **Integration Tests**     | ❌ Missing  | 0     | End-to-end workflows            |
 
 ## What's Tested
 
 ### ✅ **External Integrations**
+
 - **TecHub API Connection** - Mocked and tested
   - API fetch operations
   - Error handling
@@ -75,6 +80,7 @@
   - Server timestamps
 
 ### ✅ **Core Business Logic**
+
 - Battle simulation algorithm
 - Damage calculation with type advantages
 - Turn order determination
@@ -82,6 +88,7 @@
 - Stats aggregation
 
 ### ✅ **Component Rendering**
+
 - Fighter card display
 - HP bars and percentages
 - Winner badges

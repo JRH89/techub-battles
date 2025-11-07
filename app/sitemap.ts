@@ -3,7 +3,7 @@ import { getFightersFromFirestore } from '@/lib/fighter-sync';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://battles.techub.life';
-  
+
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [
     {

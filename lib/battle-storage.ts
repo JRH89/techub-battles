@@ -1,4 +1,9 @@
-import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  Timestamp,
+} from 'firebase/firestore';
 import { db } from './firebase';
 import type { BattleResult, Fighter } from './types';
 
@@ -10,7 +15,7 @@ export interface StoredBattleResult {
   // Battle metadata
   battle_id: string;
   timestamp: Timestamp | Date;
-  
+
   // Winner info
   winner: {
     login: string;
@@ -19,7 +24,7 @@ export interface StoredBattleResult {
     spirit_animal: string;
     final_hp: number;
   };
-  
+
   // Loser info
   loser: {
     login: string;
@@ -28,7 +33,7 @@ export interface StoredBattleResult {
     spirit_animal: string;
     final_hp: number;
   };
-  
+
   // Battle stats
   stats: {
     total_turns: number;
@@ -37,7 +42,7 @@ export interface StoredBattleResult {
     winner_had_type_advantage: boolean;
     battle_duration_seconds: number;
   };
-  
+
   // For Rails compatibility
   version: string; // Track battle engine version
 }
@@ -48,24 +53,33 @@ export interface StoredBattleResult {
  */
 export async function saveBattleResult(
   battleResult: BattleResult,
-  challenger: Fighter,
-  opponent: Fighter
+  _challenger: Fighter,
+  _opponent: Fighter
 ): Promise<string | null> {
   try {
     // Calculate battle stats
     const winnerDamage = battleResult.battle_log
-      .filter(e => e.type === 'attack' && e.attacker === battleResult.winner.profile.login)
+      .filter(
+        (e) =>
+          e.type === 'attack' &&
+          e.attacker === battleResult.winner.profile.login
+      )
       .reduce((sum, e) => sum + (e.damage || 0), 0);
-    
+
     const loserDamage = battleResult.battle_log
-      .filter(e => e.type === 'attack' && e.attacker === battleResult.loser.profile.login)
+      .filter(
+        (e) =>
+          e.type === 'attack' && e.attacker === battleResult.loser.profile.login
+      )
       .reduce((sum, e) => sum + (e.damage || 0), 0);
-    
+
     // Check if winner had type advantage
     const typeAdvantageEvent = battleResult.battle_log.find(
-      e => e.type === 'type_advantage' && e.message?.includes(battleResult.winner.card.archetype)
+      (e) =>
+        e.type === 'type_advantage' &&
+        e.message?.includes(battleResult.winner.card.archetype)
     );
-    
+
     // Prepare data for Firestore
     const battleData: Omit<StoredBattleResult, 'battle_id' | 'timestamp'> = {
       winner: {
@@ -73,18 +87,20 @@ export async function saveBattleResult(
         profile_id: battleResult.winner.profile.id,
         archetype: battleResult.winner.card.archetype,
         spirit_animal: battleResult.winner.card.spirit_animal,
-        final_hp: battleResult.final_hp.challenger === 0 
-          ? battleResult.final_hp.opponent 
-          : battleResult.final_hp.challenger,
+        final_hp:
+          battleResult.final_hp.challenger === 0
+            ? battleResult.final_hp.opponent
+            : battleResult.final_hp.challenger,
       },
       loser: {
         login: battleResult.loser.profile.login,
         profile_id: battleResult.loser.profile.id,
         archetype: battleResult.loser.card.archetype,
         spirit_animal: battleResult.loser.card.spirit_animal,
-        final_hp: battleResult.final_hp.challenger === 0 
-          ? battleResult.final_hp.challenger 
-          : battleResult.final_hp.opponent,
+        final_hp:
+          battleResult.final_hp.challenger === 0
+            ? battleResult.final_hp.challenger
+            : battleResult.final_hp.opponent,
       },
       stats: {
         total_turns: battleResult.total_turns,
@@ -95,19 +111,17 @@ export async function saveBattleResult(
       },
       version: '1.0.0', // Battle engine version
     };
-    
+
     // Save to Firestore with server timestamp
     const docRef = await addDoc(collection(db, 'battles'), {
       ...battleData,
       timestamp: serverTimestamp(),
     });
-    
+
     // Battle result saved
     return docRef.id;
-    
-  } catch (error) {
+  } catch (_error) {
     // Error saving battle result
-    // Don't throw - battles should work even if storage fails
     return null;
   }
 }

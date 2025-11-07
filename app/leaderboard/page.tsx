@@ -25,22 +25,22 @@ export default function LeaderboardPage() {
     try {
       const battlesRef = collection(db, 'battles');
       const snapshot = await getDocs(battlesRef);
-      
+
       // Aggregate stats by player
       const stats: Record<string, { wins: number; losses: number }> = {};
-      
+
       snapshot.forEach((doc) => {
         const data = doc.data();
         const winnerLogin = data.winner?.login;
         const loserLogin = data.loser?.login;
-        
+
         if (winnerLogin) {
           if (!stats[winnerLogin]) {
             stats[winnerLogin] = { wins: 0, losses: 0 };
           }
           stats[winnerLogin].wins++;
         }
-        
+
         if (loserLogin) {
           if (!stats[loserLogin]) {
             stats[loserLogin] = { wins: 0, losses: 0 };
@@ -48,7 +48,7 @@ export default function LeaderboardPage() {
           stats[loserLogin].losses++;
         }
       });
-      
+
       // Convert to leaderboard entries and sort
       const entries: LeaderboardEntry[] = Object.entries(stats)
         .map(([login, data]) => ({
@@ -64,7 +64,7 @@ export default function LeaderboardPage() {
           }
           return b.winRate - a.winRate;
         });
-      
+
       setLeaderboard(entries);
     } catch (error) {
       // Error loading leaderboard
@@ -79,7 +79,8 @@ export default function LeaderboardPage() {
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
           <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-orange-500 to-red-600 mb-3 sm:mb-4 px-2">
-            <span className="hidden sm:inline">🏆 </span>Leaderboard<span className="hidden sm:inline"> 🏆</span>
+            <span className="hidden sm:inline">🏆 </span>Leaderboard
+            <span className="hidden sm:inline"> 🏆</span>
           </h1>
           <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 px-4">
             Top fighters ranked by wins and win rate
@@ -90,7 +91,9 @@ export default function LeaderboardPage() {
         {loading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-slate-600 dark:text-slate-400">Loading leaderboard...</p>
+            <p className="mt-4 text-slate-600 dark:text-slate-400">
+              Loading leaderboard...
+            </p>
           </div>
         ) : leaderboard.length === 0 ? (
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-12 text-center">
@@ -101,12 +104,12 @@ export default function LeaderboardPage() {
             <p className="text-slate-600 dark:text-slate-400 mb-6">
               Be the first to compete and claim your spot on the leaderboard.
             </p>
-            <a
+            <Link
               href="/"
               className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-white font-bold hover:from-blue-700 hover:to-purple-700 transition shadow-lg"
             >
               Start Battle →
-            </a>
+            </Link>
           </div>
         ) : (
           <>
@@ -115,28 +118,47 @@ export default function LeaderboardPage() {
               <table className="w-full">
                 <thead className="bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-bold text-slate-900 dark:text-slate-100">Rank</th>
-                    <th className="px-6 py-4 text-left text-sm font-bold text-slate-900 dark:text-slate-100">Fighter</th>
-                    <th className="px-6 py-4 text-center text-sm font-bold text-slate-900 dark:text-slate-100">Wins</th>
-                    <th className="px-6 py-4 text-center text-sm font-bold text-slate-900 dark:text-slate-100">Losses</th>
-                    <th className="px-6 py-4 text-center text-sm font-bold text-slate-900 dark:text-slate-100">Win Rate</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-slate-900 dark:text-slate-100">
+                      Rank
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-slate-900 dark:text-slate-100">
+                      Fighter
+                    </th>
+                    <th className="px-6 py-4 text-center text-sm font-bold text-slate-900 dark:text-slate-100">
+                      Wins
+                    </th>
+                    <th className="px-6 py-4 text-center text-sm font-bold text-slate-900 dark:text-slate-100">
+                      Losses
+                    </th>
+                    <th className="px-6 py-4 text-center text-sm font-bold text-slate-900 dark:text-slate-100">
+                      Win Rate
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
                   {leaderboard.map((entry, index) => (
-                    <tr key={entry.login} className="hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                    <tr
+                      key={entry.login}
+                      className="hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                    >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          {index === 0 && <Trophy className="h-5 w-5 text-yellow-500" />}
-                          {index === 1 && <Medal className="h-5 w-5 text-slate-400" />}
-                          {index === 2 && <Award className="h-5 w-5 text-orange-600" />}
+                          {index === 0 && (
+                            <Trophy className="h-5 w-5 text-yellow-500" />
+                          )}
+                          {index === 1 && (
+                            <Medal className="h-5 w-5 text-slate-400" />
+                          )}
+                          {index === 2 && (
+                            <Award className="h-5 w-5 text-orange-600" />
+                          )}
                           <span className="text-lg font-bold text-slate-900 dark:text-slate-100">
                             #{index + 1}
                           </span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <Link 
+                        <Link
                           href={`/player/${entry.login}`}
                           className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                         >
@@ -174,9 +196,15 @@ export default function LeaderboardPage() {
                   {/* Rank and Fighter */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      {index === 0 && <Trophy className="h-6 w-6 text-yellow-500" />}
-                      {index === 1 && <Medal className="h-6 w-6 text-slate-400" />}
-                      {index === 2 && <Award className="h-6 w-6 text-orange-600" />}
+                      {index === 0 && (
+                        <Trophy className="h-6 w-6 text-yellow-500" />
+                      )}
+                      {index === 1 && (
+                        <Medal className="h-6 w-6 text-slate-400" />
+                      )}
+                      {index === 2 && (
+                        <Award className="h-6 w-6 text-orange-600" />
+                      )}
                       {index > 2 && (
                         <div className="h-6 w-6 flex items-center justify-center">
                           <span className="text-lg font-bold text-slate-400">
@@ -184,7 +212,7 @@ export default function LeaderboardPage() {
                           </span>
                         </div>
                       )}
-                      <Link 
+                      <Link
                         href={`/player/${entry.login}`}
                         className="text-lg font-bold text-blue-600 dark:text-blue-400 hover:underline"
                       >

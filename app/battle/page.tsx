@@ -31,8 +31,9 @@ function BattleContent() {
       }
 
       // Load from Firestore (not Rails!)
-      const { getFightersFromFirestore, getGameDataFromFirestore } = await import('@/lib/fighter-sync');
-      
+      const { getFightersFromFirestore, getGameDataFromFirestore } =
+        await import('@/lib/fighter-sync');
+
       const [gameDataResponse, fighters] = await Promise.all([
         getGameDataFromFirestore(),
         getFightersFromFirestore(),

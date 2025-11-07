@@ -9,7 +9,12 @@ interface HPBarProps {
   className?: string;
 }
 
-export default function HPBar({ hp, maxHp, label, className = '' }: HPBarProps) {
+export default function HPBar({
+  hp,
+  maxHp,
+  label,
+  className = '',
+}: HPBarProps) {
   const percentage = Math.max(0, Math.min(100, (hp / maxHp) * 100));
 
   const getColor = () => {

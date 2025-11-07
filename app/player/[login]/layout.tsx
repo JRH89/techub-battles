@@ -1,16 +1,16 @@
 import type { Metadata } from 'next';
 import { createMetadata } from '@/lib/metadata';
 
-export async function generateMetadata({ 
-  params 
-}: { 
-  params: Promise<{ login: string }> 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ login: string }>;
 }): Promise<Metadata> {
   const { login } = await params;
-  
+
   // Use player's GitHub avatar as the favicon and OG image
   const avatarUrl = `https://github.com/${login}.png`;
-  
+
   return createMetadata({
     title: `@${login} - Player Profile`,
     description: `View @${login}'s battle stats, win rate, recent battles, and fighter card on TecHub Battles. Check out their archetype, special moves, and leaderboard ranking!`,

@@ -12,7 +12,10 @@ jest.mock('firebase/firestore', () => ({
 const mockGameData: GameData = {
   archetypes: ['Code Warrior', 'Bug Hunter', 'Architect'],
   type_chart: {
-    'Code Warrior': { strong_against: ['Bug Hunter'], weak_against: ['Architect'] },
+    'Code Warrior': {
+      strong_against: ['Bug Hunter'],
+      weak_against: ['Architect'],
+    },
   },
   spirit_animals: {},
   archetype_abilities: {},
@@ -51,14 +54,21 @@ describe('Battle Storage', () => {
     it('should save battle result to Firestore', async () => {
       const challenger = createMockFighter(1, 'challenger');
       const opponent = createMockFighter(2, 'opponent');
-      
+
       const mockBattleResult: BattleResult = {
         winner: challenger,
         loser: opponent,
         first_attacker: 'challenger',
         battle_log: [
           { type: 'battle_end', turn: 0, message: 'Battle begins!' },
-          { type: 'attack', turn: 1, attacker: 'challenger', defender: 'opponent', damage: 25, message: 'Hit!' },
+          {
+            type: 'attack',
+            turn: 1,
+            attacker: 'challenger',
+            defender: 'opponent',
+            damage: 25,
+            message: 'Hit!',
+          },
         ],
         total_turns: 5,
         final_hp: { challenger: 50, opponent: 0 },
@@ -66,7 +76,11 @@ describe('Battle Storage', () => {
 
       (addDoc as jest.Mock).mockResolvedValue({ id: 'battle123' });
 
-      const result = await saveBattleResult(mockBattleResult, challenger, opponent);
+      const result = await saveBattleResult(
+        mockBattleResult,
+        challenger,
+        opponent
+      );
 
       expect(addDoc).toHaveBeenCalled();
       expect(result).toBe('battle123');
@@ -75,14 +89,28 @@ describe('Battle Storage', () => {
     it('should calculate winner and loser stats correctly', async () => {
       const challenger = createMockFighter(1, 'challenger');
       const opponent = createMockFighter(2, 'opponent');
-      
+
       const mockBattleResult: BattleResult = {
         winner: challenger,
         loser: opponent,
         first_attacker: 'challenger',
         battle_log: [
-          { type: 'attack', turn: 1, attacker: 'challenger', defender: 'opponent', damage: 30, message: 'Hit!' },
-          { type: 'attack', turn: 2, attacker: 'opponent', defender: 'challenger', damage: 15, message: 'Hit!' },
+          {
+            type: 'attack',
+            turn: 1,
+            attacker: 'challenger',
+            defender: 'opponent',
+            damage: 30,
+            message: 'Hit!',
+          },
+          {
+            type: 'attack',
+            turn: 2,
+            attacker: 'opponent',
+            defender: 'challenger',
+            damage: 15,
+            message: 'Hit!',
+          },
         ],
         total_turns: 3,
         final_hp: { challenger: 85, opponent: 0 },
@@ -93,7 +121,7 @@ describe('Battle Storage', () => {
       await saveBattleResult(mockBattleResult, challenger, opponent);
 
       const savedData = (addDoc as jest.Mock).mock.calls[0][1];
-      
+
       expect(savedData.winner.login).toBe('challenger');
       expect(savedData.loser.login).toBe('opponent');
       expect(savedData.stats.total_turns).toBe(3);
@@ -103,7 +131,7 @@ describe('Battle Storage', () => {
     it('should handle Firestore save errors gracefully', async () => {
       const challenger = createMockFighter(1, 'challenger');
       const opponent = createMockFighter(2, 'opponent');
-      
+
       const mockBattleResult: BattleResult = {
         winner: challenger,
         loser: opponent,
@@ -115,7 +143,11 @@ describe('Battle Storage', () => {
 
       (addDoc as jest.Mock).mockRejectedValue(new Error('Firestore error'));
 
-      const result = await saveBattleResult(mockBattleResult, challenger, opponent);
+      const result = await saveBattleResult(
+        mockBattleResult,
+        challenger,
+        opponent
+      );
 
       // Should return null on error, not throw
       expect(result).toBeNull();
@@ -124,14 +156,25 @@ describe('Battle Storage', () => {
     it('should include type advantage in stats', async () => {
       const challenger = createMockFighter(1, 'challenger');
       const opponent = createMockFighter(2, 'opponent');
-      
+
       const mockBattleResult: BattleResult = {
         winner: challenger,
         loser: opponent,
         first_attacker: 'challenger',
         battle_log: [
-          { type: 'type_advantage', turn: 0, message: 'Code Warrior has advantage!' },
-          { type: 'attack', turn: 1, attacker: 'challenger', defender: 'opponent', damage: 40, message: 'Critical!' },
+          {
+            type: 'type_advantage',
+            turn: 0,
+            message: 'Code Warrior has advantage!',
+          },
+          {
+            type: 'attack',
+            turn: 1,
+            attacker: 'challenger',
+            defender: 'opponent',
+            damage: 40,
+            message: 'Critical!',
+          },
         ],
         total_turns: 2,
         final_hp: { challenger: 100, opponent: 0 },
@@ -148,7 +191,7 @@ describe('Battle Storage', () => {
     it('should save with server timestamp', async () => {
       const challenger = createMockFighter(1, 'challenger');
       const opponent = createMockFighter(2, 'opponent');
-      
+
       const mockBattleResult: BattleResult = {
         winner: challenger,
         loser: opponent,
@@ -163,7 +206,7 @@ describe('Battle Storage', () => {
       await saveBattleResult(mockBattleResult, challenger, opponent);
 
       expect(serverTimestamp).toHaveBeenCalled();
-      
+
       const savedData = (addDoc as jest.Mock).mock.calls[0][1];
       expect(savedData).toHaveProperty('timestamp');
     });

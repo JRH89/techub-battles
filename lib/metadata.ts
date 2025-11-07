@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 
 export const siteConfig = {
   name: 'TecHub Battles',
-  description: 'Watch TecHub developer profiles battle it out in epic turn-based combat! Unique stats, archetypes, spirit animals, and special moves determine the victor.',
+  description:
+    'Watch TecHub developer profiles battle it out in epic turn-based combat! Unique stats, archetypes, spirit animals, and special moves determine the victor.',
   url: 'https://battles.techub.life',
   ogImage: '/og-image.png',
   links: {
@@ -199,7 +200,9 @@ export function generatePersonSchema({
   };
 }
 
-export function generateBreadcrumbSchema(items: { name: string; url: string }[]) {
+export function generateBreadcrumbSchema(
+  items: { name: string; url: string }[]
+) {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',

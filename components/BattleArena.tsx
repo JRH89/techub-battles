@@ -2,7 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Pause, RotateCcw, FastForward, Smartphone, ExternalLink, X } from 'lucide-react';
+import {
+  Pause,
+  RotateCcw,
+  FastForward,
+  Smartphone,
+  ExternalLink,
+  X,
+} from 'lucide-react';
 import { simulateBattle } from '@/lib/battle-engine';
 import { saveBattleResult } from '@/lib/battle-storage';
 import type { Fighter, GameData, BattleEvent, BattleResult } from '@/lib/types';
@@ -44,7 +51,7 @@ export default function BattleArena({
   useEffect(() => {
     // Only run on client side
     if (typeof window === 'undefined') return;
-    
+
     const checkOrientation = () => {
       // Only enforce landscape on mobile/tablet (< 1024px width)
       if (window.innerWidth < 1024) {
@@ -68,44 +75,60 @@ export default function BattleArena({
   useEffect(() => {
     // Only run on client side
     if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-      try {
+      const checkTwitterSource = () => {
         if (isFromTwitter() && !dismissedTwitterBanner) {
           setShowTwitterBanner(true);
         }
-      } catch (error) {
-        // Twitter detection failed
-      }
+      };
+
+      // Use setTimeout to avoid synchronous setState in effect
+      const timeoutId = setTimeout(checkTwitterSource, 0);
+
+      return () => clearTimeout(timeoutId);
     }
   }, [dismissedTwitterBanner]);
 
   // Simulate battle on mount
   useEffect(() => {
-    try {
-      const result = simulateBattle(challenger, opponent, gameData);
-      setBattleResult(result);
-      
-      // Start countdown immediately
-      setCountdown(3);
-      const countdownInterval = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev === null || prev <= 1) {
-            clearInterval(countdownInterval);
-            // Show speed advantage for 2 seconds after countdown
-            setTimeout(() => {
-              setBattleStarted(true);
-              setIsPlaying(true);
-            }, 2000);
-            return null;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      
-      return () => clearInterval(countdownInterval);
-    } catch (error) {
-      // Battle simulation error
-    }
+    const runBattleSimulation = () => {
+      try {
+        const result = simulateBattle(challenger, opponent, gameData);
+        setBattleResult(result);
+
+        // Start countdown immediately
+        setCountdown(3);
+      } catch (error) {
+        console.error('Battle simulation failed:', error);
+      }
+    };
+
+    // Use setTimeout to avoid synchronous setState in effect
+    const timeoutId = setTimeout(runBattleSimulation, 0);
+
+    return () => clearTimeout(timeoutId);
   }, [challenger, opponent, gameData]);
+
+  // Countdown timer
+  useEffect(() => {
+    if (countdown === null || countdown <= 0) return;
+
+    const countdownInterval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev === null || prev <= 1) {
+          clearInterval(countdownInterval);
+          // Show speed advantage for 2 seconds after countdown
+          setTimeout(() => {
+            setBattleStarted(true);
+            setIsPlaying(true);
+          }, 2000);
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(countdownInterval);
+  }, [countdown]);
 
   // Animation loop
   useEffect(() => {
@@ -115,24 +138,26 @@ export default function BattleArena({
       setCurrentEventIndex((prev) => {
         if (prev >= battleResult.battle_log.length - 1) {
           setIsPlaying(false);
-          
+
           // Clear messages when battle ends
           setChallengerMessage('');
           setOpponentMessage('');
-          
+
           // Save battle result to Firebase when complete
-          saveBattleResult(battleResult, challenger, opponent).then((battleId) => {
-            if (battleId) {
-              // Battle saved with ID
+          saveBattleResult(battleResult, challenger, opponent).then(
+            (battleId) => {
+              if (battleId) {
+                // Battle saved with ID
+              }
             }
-          });
-          
+          );
+
           return prev;
         }
 
         // Update HP and messages based on current event
         const nextEvent = battleResult.battle_log[prev + 1];
-        
+
         // Handle different event types
         if (nextEvent.type === 'battle_start') {
           setCenterMessage('⚔️ Battle begins! ⚔️');
@@ -145,7 +170,10 @@ export default function BattleArena({
           setTimeout(() => setCenterMessage(''), 1500);
         } else if (nextEvent.type === 'knockout') {
           setCenterMessage(`💥 ${nextEvent.message} 💥`);
-        } else if ((nextEvent.type === 'attack' || nextEvent.type === 'special_move') && nextEvent.damage) {
+        } else if (
+          (nextEvent.type === 'attack' || nextEvent.type === 'special_move') &&
+          nextEvent.damage
+        ) {
           // Update charge bars (increment every turn, reset on special move)
           if (nextEvent.type === 'special_move') {
             // Reset charge and trigger special move animation
@@ -161,41 +189,42 @@ export default function BattleArena({
           } else {
             // Increment charge for normal attacks
             if (nextEvent.attacker === challenger.profile.login) {
-              setChallengerCharge(prev => Math.min(prev + 1, 3));
+              setChallengerCharge((prev) => Math.min(prev + 1, 3));
             } else {
-              setOpponentCharge(prev => Math.min(prev + 1, 3));
+              setOpponentCharge((prev) => Math.min(prev + 1, 3));
             }
           }
-          
+
           // Update defender's HP
           if (nextEvent.defender === challenger.profile.login) {
             setChallengerHP(nextEvent.defender_hp || 0);
           } else if (nextEvent.defender === opponent.profile.login) {
             setOpponentHP(nextEvent.defender_hp || 0);
           }
-          
+
           // Build detailed attack message with attacker and defender
           let attackMsg = '';
-          
+
           // Check if it's a special move
           if (nextEvent.type === 'special_move' && nextEvent.special_move) {
             attackMsg = `✨ ${nextEvent.special_move}! ${nextEvent.damage} damage`;
           } else {
             attackMsg = `⚔️ ${nextEvent.damage} damage`;
           }
-          
+
           // Check for type advantage using multiplier
           if (nextEvent.type_multiplier === 1.5) {
             attackMsg += ' 💥 SUPER EFFECTIVE!';
           } else if (nextEvent.type_multiplier === 0.75) {
             attackMsg += ' 🛡️ Not very effective...';
           }
-          
+
           // Check for archetype (from attacker)
-          const attackerArchetype = nextEvent.attacker === challenger.profile.login 
-            ? challenger.card.archetype 
-            : opponent.card.archetype;
-            
+          const attackerArchetype =
+            nextEvent.attacker === challenger.profile.login
+              ? challenger.card.archetype
+              : opponent.card.archetype;
+
           if (attackerArchetype === 'The Magician') {
             attackMsg += ' 🔮';
           } else if (attackerArchetype === 'The Rebel') {
@@ -207,7 +236,7 @@ export default function BattleArena({
           } else if (attackerArchetype === 'The Explorer') {
             attackMsg += ' 🗺️';
           }
-          
+
           // Show attacker's message (stays until next message)
           if (nextEvent.attacker === challenger.profile.login) {
             setChallengerMessage(attackMsg);
@@ -221,20 +250,24 @@ export default function BattleArena({
         } else if (nextEvent.type === 'passive_trigger') {
           // Show passive trigger message
           if (nextEvent.message?.includes('dodged')) {
-            const affectedPlayer = nextEvent.message?.includes(challenger.profile.login) 
-              ? 'challenger' 
+            const affectedPlayer = nextEvent.message?.includes(
+              challenger.profile.login
+            )
+              ? 'challenger'
               : 'opponent';
-            
+
             if (affectedPlayer === 'challenger') {
               setChallengerMessage('✨ DODGED! (Jester)');
             } else {
               setOpponentMessage('✨ DODGED! (Jester)');
             }
           } else if (nextEvent.message?.includes('regenerated')) {
-            const affectedPlayer = nextEvent.message?.includes(challenger.profile.login) 
-              ? 'challenger' 
+            const affectedPlayer = nextEvent.message?.includes(
+              challenger.profile.login
+            )
+              ? 'challenger'
               : 'opponent';
-            
+
             if (affectedPlayer === 'challenger') {
               setChallengerMessage('💚 +2 HP (Caregiver)');
             } else {
@@ -248,9 +281,9 @@ export default function BattleArena({
     }, 1000 / speed);
 
     return () => clearInterval(interval);
-  }, [isPlaying, speed, battleResult, challenger, opponent]);
+  }, [isPlaying, speed, battleResult, challenger, opponent, battleStarted]);
 
-  const handlePlay = () => {
+  const _handlePlay = () => {
     if (currentEventIndex >= (battleResult?.battle_log.length || 0) - 1) {
       handleReset();
     }
@@ -309,10 +342,12 @@ export default function BattleArena({
             Rotate Your Device
           </h2>
           <p className="text-slate-600 dark:text-slate-400 mb-2">
-            For the best battle experience, please rotate your device to landscape mode.
+            For the best battle experience, please rotate your device to
+            landscape mode.
           </p>
           <p className="text-sm text-slate-500 dark:text-slate-500">
-            The battle arena needs more screen space to display both fighters properly.
+            The battle arena needs more screen space to display both fighters
+            properly.
           </p>
         </motion.div>
       </div>
@@ -320,9 +355,12 @@ export default function BattleArena({
   }
 
   const visibleEvents = battleResult.battle_log.slice(0, currentEventIndex + 1);
-  const isChallengerWinner = battleResult.winner.profile.id === challenger.profile.id;
-  const isOpponentWinner = battleResult.winner.profile.id === opponent.profile.id;
-  const battleComplete = currentEventIndex >= battleResult.battle_log.length - 1;
+  const isChallengerWinner =
+    battleResult.winner.profile.id === challenger.profile.id;
+  const _isOpponentWinner =
+    battleResult.winner.profile.id === opponent.profile.id;
+  const battleComplete =
+    currentEventIndex >= battleResult.battle_log.length - 1;
 
   return (
     <div className="min-h-screen h-full bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 py-8 px-4">
@@ -341,7 +379,10 @@ export default function BattleArena({
               </div>
               <div>
                 <div className="font-bold text-white">Coming from Twitter?</div>
-                <div className="text-sm text-gray-300">For the best experience, open this page in a new browser window</div>
+                <div className="text-sm text-gray-300">
+                  For the best experience, open this page in a new browser
+                  window
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -367,7 +408,7 @@ export default function BattleArena({
           </div>
         </motion.div>
       )}
-      
+
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Controls with Header in Center */}
         <div className="rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 sm:p-6 shadow-xl">
@@ -417,7 +458,10 @@ export default function BattleArena({
 
             {/* Speed Control */}
             <div className="flex items-center gap-2 sm:gap-3">
-              <FastForward size={16} className="text-slate-600 dark:text-slate-400 sm:w-5 sm:h-5" />
+              <FastForward
+                size={16}
+                className="text-slate-600 dark:text-slate-400 sm:w-5 sm:h-5"
+              />
               <label className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
                 Speed:
               </label>
@@ -466,7 +510,9 @@ export default function BattleArena({
                   className="rounded-lg sm:rounded-xl bg-blue-500 px-2 py-1 sm:px-4 sm:py-2 lg:px-6 lg:py-3 text-white font-bold shadow-xl border-2 sm:border-4 border-blue-400 flex items-center gap-1 sm:gap-2 max-w-[200px] sm:max-w-md text-center"
                 >
                   <span className="text-lg sm:text-xl lg:text-2xl">←</span>
-                  <span className="text-[10px] sm:text-xs lg:text-sm truncate">{challengerMessage}</span>
+                  <span className="text-[10px] sm:text-xs lg:text-sm truncate">
+                    {challengerMessage}
+                  </span>
                 </motion.div>
               )}
 
@@ -474,32 +520,42 @@ export default function BattleArena({
               {battleComplete && (
                 <motion.div
                   initial={{ scale: 0, rotate: -180, y: -50 }}
-                  animate={{ 
-                    scale: 1, 
+                  animate={{
+                    scale: 1,
                     rotate: 0,
                     y: 0,
                     boxShadow: [
                       '0 0 20px 5px rgba(251, 191, 36, 0.4)',
                       '0 0 30px 8px rgba(251, 191, 36, 0.6)',
-                      '0 0 20px 5px rgba(251, 191, 36, 0.4)'
-                    ]
+                      '0 0 20px 5px rgba(251, 191, 36, 0.4)',
+                    ],
                   }}
-                  transition={{ 
-                    delay: 0.5, 
-                    type: 'spring', 
+                  transition={{
+                    delay: 0.5,
+                    type: 'spring',
                     bounce: 0.4,
-                    boxShadow: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
+                    boxShadow: {
+                      duration: 2.5,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                    },
                   }}
                   className="inline-flex flex-col items-center gap-1 sm:gap-2 rounded-xl sm:rounded-2xl bg-gradient-to-r from-yellow-400 via-orange-500 to-yellow-400 px-4 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-4 text-white font-bold shadow-2xl border-2 sm:border-4 border-yellow-300 mb-2 sm:mb-4"
                 >
                   <span className="text-2xl sm:text-3xl lg:text-4xl">🏆</span>
                   <div className="flex flex-col items-center">
-                    <span className="text-[10px] sm:text-xs uppercase tracking-wider opacity-90">Winner</span>
-                    <span className="text-sm sm:text-lg lg:text-xl font-black truncate max-w-[150px] sm:max-w-none">@{isChallengerWinner ? challenger.profile.login : opponent.profile.login}</span>
+                    <span className="text-[10px] sm:text-xs uppercase tracking-wider opacity-90">
+                      Winner
+                    </span>
+                    <span className="text-sm sm:text-lg lg:text-xl font-black truncate max-w-[150px] sm:max-w-none">
+                      @
+                      {isChallengerWinner
+                        ? challenger.profile.login
+                        : opponent.profile.login}
+                    </span>
                   </div>
                 </motion.div>
               )}
-
 
               {/* Countdown or Speed Advantage or VS */}
               {!battleStarted && battleResult && countdown === null ? (
@@ -512,7 +568,8 @@ export default function BattleArena({
                     ⚡ SPEED ADVANTAGE ⚡
                   </div>
                   <div className="text-xs sm:text-sm lg:text-base">
-                    {battleResult.first_attacker === challenger.profile.login ? (
+                    {battleResult.first_attacker ===
+                    challenger.profile.login ? (
                       <span>@{challenger.profile.login} attacks first!</span>
                     ) : (
                       <span>@{opponent.profile.login} attacks first!</span>
@@ -541,7 +598,9 @@ export default function BattleArena({
                   }}
                   className="rounded-full bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 p-4 sm:p-6 lg:p-8 text-white shadow-2xl"
                 >
-                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">VS</div>
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">
+                    VS
+                  </div>
                 </motion.div>
               ) : null}
 
@@ -554,7 +613,9 @@ export default function BattleArena({
                   exit={{ opacity: 0 }}
                   className="rounded-lg sm:rounded-xl bg-red-500 px-2 py-1 sm:px-4 sm:py-2 lg:px-6 lg:py-3 text-white font-bold shadow-xl border-2 sm:border-4 border-red-400 flex items-center gap-1 sm:gap-2 max-w-[200px] sm:max-w-md text-center"
                 >
-                  <span className="text-[10px] sm:text-xs lg:text-sm truncate">{opponentMessage}</span>
+                  <span className="text-[10px] sm:text-xs lg:text-sm truncate">
+                    {opponentMessage}
+                  </span>
                   <span className="text-lg sm:text-xl lg:text-2xl">→</span>
                 </motion.div>
               )}

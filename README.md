@@ -11,6 +11,7 @@ TecHub Battles represents a unique fusion of developer culture and gaming mechan
 ## ✨ Key Features
 
 ### Battle System
+
 - ⚔️ **Auto-Starting Battles** - No manual play button needed! Battles begin automatically with a dramatic 3-2-1 countdown
 - 💚 **Dynamic HP Bars** - Smooth, color-changing health indicators that transition from green to yellow to red based on damage taken
 - 🎯 **Type Advantage System** - 12 unique archetypes with Pokémon-style strength/weakness mechanics (1.5x strong, 0.75x weak damage)
@@ -21,6 +22,7 @@ TecHub Battles represents a unique fusion of developer culture and gaming mechan
 - 🏆 **Winner Celebration** - Animated trophy and confetti effects for battle victors
 
 ### User Experience
+
 - 🌙 **Dark Mode Support** - Full dark/light theme compatibility with Tailwind CSS
 - 📱 **Mobile Responsive** - Optimized for all screen sizes with landscape orientation detection
 - 🐦 **Twitter Detection** - Automatically detects Twitter/X in-app browser users and suggests opening in a regular browser
@@ -29,6 +31,7 @@ TecHub Battles represents a unique fusion of developer culture and gaming mechan
 - 🎮 **Battle Controls** - Pause, reset, and restart functionality for battle management
 
 ### Technical Excellence
+
 - 🔒 **Type Safety** - Full TypeScript implementation with comprehensive type definitions
 - 🧪 **Comprehensive Testing** - Full test suite covering battle engine, components, and API integration
 - 📊 **Battle Storage** - Firebase integration for storing battle results and leaderboards
@@ -38,17 +41,20 @@ TecHub Battles represents a unique fusion of developer culture and gaming mechan
 ## 🛠 Technology Stack
 
 ### Frontend Framework
+
 - **Next.js 16.0.1** - React framework with App Router and Server Components
 - **TypeScript** - End-to-end type safety and IntelliSense support
 - **Tailwind CSS v4** - Utility-first styling with dark mode support
 - **Framer Motion** - Production-ready animations and transitions
 
 ### API & Data
+
 - **Axios** - HTTP client for Rails API communication
 - **Firebase Firestore** - Real-time database for caching and battle storage
 - **Lucide React** - Modern icon library for UI components
 
 ### Development & Testing
+
 - **Jest** - Testing framework with comprehensive test coverage
 - **React Testing Library** - Component testing utilities
 - **ESLint** - Code quality and consistency enforcement
@@ -56,6 +62,7 @@ TecHub Battles represents a unique fusion of developer culture and gaming mechan
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js 18+ installed
 - TecHub Rails API running (for initial data sync)
 - Firebase project configured (for caching/storage)
@@ -63,6 +70,7 @@ TecHub Battles represents a unique fusion of developer culture and gaming mechan
 ### Installation
 
 1. **Clone and Install Dependencies**
+
 ```bash
 git clone <repository-url>
 cd techub-battles
@@ -70,7 +78,8 @@ npm install
 ```
 
 2. **Environment Configuration**
-Create `.env.local` with your API endpoints:
+   Create `.env.local` with your API endpoints:
+
 ```bash
 # Development (local Rails)
 NEXT_PUBLIC_TECHUB_API=http://localhost:3000/api/v1
@@ -88,18 +97,20 @@ NEXT_PUBLIC_FIREBASE_APP_ID=app_id
 ```
 
 3. **Start Development Server**
+
 ```bash
 npm run dev
 ```
 
 4. **Access the Application**
-Open [http://localhost:3000](http://localhost:3000) in your browser
+   Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ### Initial Data Setup
 
 The application requires fighter data from the Rails API:
 
 1. **Ensure Rails API is running:**
+
 ```bash
 cd ../rails/techub
 rails s
@@ -137,20 +148,20 @@ finalDamage = baseDamage * randomFactor * typeMultiplier * spiritAnimalModifier
 
 12 unique archetypes, each with distinct playstyles:
 
-| Archetype | Style | Passive Ability |
-|-----------|-------|-----------------|
-| **Code Warrior** | Offensive | +10% damage vs weak types |
-| **Bug Hunter** | Tactical | +5% critical hit chance |
-| **Architect** | Defensive | +10% defense when HP < 50% |
-| **Data Scientist** | Analytical | +15% accuracy |
-| **DevOps Engineer** | Support | Heal 5 HP every 3 turns |
-| **UI/UX Designer** | Creative | 10% dodge chance |
-| **Product Manager** | Strategic | +20% speed when losing |
-| **Security Expert** | Protective | Reflect 10% damage taken |
-| **Cloud Engineer** | Adaptive | Weather-based stat boosts |
-| **AI Engineer** | Smart | Predict next opponent move |
-| **Database Admin** | Stable | 25% reduced damage variance |
-| **Technical Writer** | Informative | Reveal enemy stats |
+| Archetype            | Style       | Passive Ability             |
+| -------------------- | ----------- | --------------------------- |
+| **Code Warrior**     | Offensive   | +10% damage vs weak types   |
+| **Bug Hunter**       | Tactical    | +5% critical hit chance     |
+| **Architect**        | Defensive   | +10% defense when HP < 50%  |
+| **Data Scientist**   | Analytical  | +15% accuracy               |
+| **DevOps Engineer**  | Support     | Heal 5 HP every 3 turns     |
+| **UI/UX Designer**   | Creative    | 10% dodge chance            |
+| **Product Manager**  | Strategic   | +20% speed when losing      |
+| **Security Expert**  | Protective  | Reflect 10% damage taken    |
+| **Cloud Engineer**   | Adaptive    | Weather-based stat boosts   |
+| **AI Engineer**      | Smart       | Predict next opponent move  |
+| **Database Admin**   | Stable      | 25% reduced damage variance |
+| **Technical Writer** | Informative | Reveal enemy stats          |
 
 ### Spirit Animal Enhancements
 
@@ -245,29 +256,34 @@ The application maintains comprehensive test coverage:
 ### Vercel Deployment (Recommended)
 
 1. **Install Vercel CLI**
+
 ```bash
 npm i -g vercel
 ```
 
 2. **Deploy Project**
+
 ```bash
 vercel --prod
 ```
 
 3. **Configure Environment Variables**
-In Vercel dashboard, set:
+   In Vercel dashboard, set:
+
 - `NEXT_PUBLIC_TECHUB_API=https://techub.life/api/v1`
 - Firebase configuration variables
 
 ### Environment-Specific Configurations
 
 **Development:**
+
 - Local Rails API: `http://localhost:3000/api/v1`
 - Hot reload enabled
 - Detailed error messages
 - Console logging for debugging
 
 **Production:**
+
 - Production Rails API: `https://techub.life/api/v1`
 - Optimized builds
 - Error reporting
@@ -278,12 +294,14 @@ In Vercel dashboard, set:
 ### Architecture Benefits
 
 **Traditional Server-Side Battles:**
+
 - Rails compute for every battle
 - Database queries per turn
 - Server costs scale with user engagement
 - Potential bottlenecks during high traffic
 
 **TecHub Battles Approach:**
+
 - Rails: JSON responses only (~$0.01/1000 requests)
 - Next.js: Client-side battles (FREE on Vercel)
 - Firebase: Caching and storage (~$0-20/month based on usage)
@@ -301,21 +319,25 @@ In Vercel dashboard, set:
 ### Common Issues
 
 **"Server unable to be reached" Error**
+
 - **Cause**: Rails API not running or network issues
 - **Solution**: App automatically falls back to cached Firestore data
 - **Prevention**: Firestore cache provides graceful degradation
 
 **No Fighters Available**
+
 - **Cause**: First-time setup without initial sync
 - **Solution**: Ensure Rails API is running and refresh page
 - **Verification**: Check `.env.local` API configuration
 
 **Twitter Browser Issues**
+
 - **Cause**: Twitter's in-app browser limitations
 - **Solution**: App detects and suggests browser switch
 - **User Experience**: Non-intrusive banner with easy dismissal
 
 **Build Errors**
+
 - **Cause**: TypeScript type mismatches or missing dependencies
 - **Solution**: Run `npm run type-check` and `npm install`
 - **Prevention**: Regular test suite execution
@@ -323,11 +345,13 @@ In Vercel dashboard, set:
 ### Performance Issues
 
 **Slow Initial Load**
+
 - **Cause**: First-time data sync from Rails
 - **Solution**: Implement loading states and progress indicators
 - **Optimization**: Pre-populate Firestore with seed data
 
 **Battle Lag**
+
 - **Cause**: Complex animations on low-end devices
 - **Solution**: Reduce animation quality or disable effects
 - **Monitoring**: Performance metrics and user feedback
@@ -366,7 +390,7 @@ To minimize API costs and bandwidth, implement conditional GET support:
 def battle_ready
   # Use the latest updated_at timestamp as ETag
   last_modified = Profile.battle_ready.maximum(:updated_at)
-  
+
   # Rails automatically returns 304 if client's ETag matches
   if stale?(last_modified: last_modified, public: true)
     @profiles = Profile.battle_ready.includes(:card)
@@ -377,11 +401,13 @@ end
 ```
 
 **Benefits:**
+
 - 304 responses are ~200 bytes vs full JSON (potentially KB/MB)
 - No database queries or JSON serialization on cache hits
 - Significantly reduces hosting costs and API load
 - Client always gets fresh data when it changes
-```
+
+````
 
 ### Data Schema
 
@@ -394,9 +420,10 @@ interface Profile {
   avatar_url: string;
   updated_at?: string; // For incremental sync
 }
-```
+````
 
 **Battle Card Structure:**
+
 ```typescript
 interface ProfileCard {
   archetype: string;

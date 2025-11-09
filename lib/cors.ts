@@ -27,6 +27,11 @@ export function addCorsHeaders(response: NextResponse, origin?: string) {
     response.headers.set('Access-Control-Allow-Origin', allowedOrigins.join(', '));
   }
 
+  // Preserve existing cache headers if they exist
+  if (!response.headers.has('Cache-Control')) {
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+  }
+
   return response;
 }
 

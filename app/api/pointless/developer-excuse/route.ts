@@ -50,7 +50,14 @@ export async function GET(request: Request) {
     willFixIn: `${Math.floor(Math.random() * 10) + 1} sprints`,
   };
 
-  const response = NextResponse.json(responseData);
+  const response = NextResponse.json(responseData, {
+    headers: {
+      'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+    },
+  });
+  
   const origin = request.headers.get('origin') || undefined;
   return addCorsHeaders(response, origin);
 }

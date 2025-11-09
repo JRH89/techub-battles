@@ -38,35 +38,36 @@ export default function PointlessPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full">
+    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 py-12 px-4 min-h-screen h-full">
+      <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-white mb-4">
-            🎭 Developer Excuse Generator
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 mb-3 sm:mb-4 px-2">
+            <span className="hidden sm:inline">🎭 </span>Developer Excuse Generator
+            <span className="hidden sm:inline"> 🎭</span>
           </h1>
-          <p className="text-xl text-purple-200">
+          <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-400 px-4">
             For when your code doesn&apos;t work and you need a good reason
           </p>
         </div>
 
         {/* Main Card */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-white/20">
+        <div className="rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-8 shadow-2xl">
           {!excuse ? (
             <div className="text-center py-12">
-              <p className="text-white/80 text-lg mb-6">
+              <p className="text-slate-600 dark:text-slate-400 text-lg mb-6">
                 Click the button below to generate your excuse
               </p>
               <button
                 onClick={generateExcuse}
                 disabled={loading}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-8 rounded-xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                className="w-full inline-flex items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 px-8 py-4 text-white font-bold text-xl shadow-2xl hover:from-red-700 hover:via-orange-700 hover:to-yellow-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
-                  <span className="flex items-center gap-2">
-                    <RefreshCw className="animate-spin" size={20} />
+                  <>
+                    <RefreshCw className="animate-spin" size={24} />
                     Generating...
-                  </span>
+                  </>
                 ) : (
                   'Generate Excuse'
                 )}
@@ -75,35 +76,35 @@ export default function PointlessPage() {
           ) : (
             <div className="space-y-6">
               {/* Excuse Text */}
-              <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-                <p className="text-3xl font-bold text-white text-center leading-relaxed">
+              <div className="rounded-xl bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-800 dark:to-blue-900 p-6 border-2 border-slate-200 dark:border-slate-700">
+                <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 text-center leading-relaxed">
                   &quot;{excuse.excuse}&quot;
                 </p>
               </div>
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                  <p className="text-purple-300 text-sm uppercase tracking-wide mb-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-2 border-blue-200 dark:border-blue-800 p-4">
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                     Confidence
                   </p>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                     {excuse.confidence}%
                   </p>
                 </div>
-                <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                  <p className="text-purple-300 text-sm uppercase tracking-wide mb-1">
+                <div className="rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-2 border-purple-200 dark:border-purple-800 p-4">
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                     Blame
                   </p>
-                  <p className="text-2xl font-bold text-white capitalize">
+                  <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 capitalize">
                     {excuse.blame}
                   </p>
                 </div>
-                <div className="bg-white/5 rounded-xl p-4 border border-white/10 col-span-2">
-                  <p className="text-purple-300 text-sm uppercase tracking-wide mb-1">
+                <div className="rounded-xl bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 border-2 border-orange-200 dark:border-orange-800 p-4 sm:col-span-2">
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                     Will Fix In
                   </p>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                     {excuse.willFixIn}
                   </p>
                 </div>
@@ -114,7 +115,7 @@ export default function PointlessPage() {
                 <button
                   onClick={generateExcuse}
                   disabled={loading}
-                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg flex items-center justify-center gap-2"
+                  className="flex-1 inline-flex items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 px-6 py-3 text-white font-bold shadow-2xl hover:from-red-700 hover:via-orange-700 hover:to-yellow-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <RefreshCw
                     className={loading ? 'animate-spin' : ''}
@@ -124,7 +125,7 @@ export default function PointlessPage() {
                 </button>
                 <button
                   onClick={copyToClipboard}
-                  className="bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-6 rounded-xl transition-all border border-white/20 flex items-center justify-center gap-2"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-6 py-3 text-slate-900 dark:text-slate-100 font-bold hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
                 >
                   {copied ? (
                     <>
@@ -145,21 +146,21 @@ export default function PointlessPage() {
 
         {/* API Info */}
         <div className="mt-8 text-center">
-          <p className="text-white/60 text-sm mb-2">
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
             Powered by the Pointless API™
           </p>
           <div className="flex gap-4 justify-center text-xs">
             <a
               href="/api/pointless"
               target="_blank"
-              className="text-purple-300 hover:text-purple-200 underline"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline"
             >
               API Directory
             </a>
             <a
               href="/api/pointless/developer-excuse"
               target="_blank"
-              className="text-purple-300 hover:text-purple-200 underline"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline"
             >
               Raw JSON
             </a>

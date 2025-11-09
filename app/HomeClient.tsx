@@ -1,0 +1,273 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Swords, Loader } from 'lucide-react';
+import type { Fighter, GameData } from '@/lib/types';
+
+interface HomeClientProps {
+  initialData?: {
+    fighters: Fighter[];
+    gameData: GameData;
+  } | null;
+}
+
+export default function HomeClient({ initialData }: HomeClientProps) {
+  const router = useRouter();
+  const [fighters, setFighters] = useState<Fighter[]>(
+    initialData?.fighters || []
+  );
+  const [gameData, setGameData] = useState<GameData | null>(
+    initialData?.gameData || null
+  );
+  const [loading, setLoading] = useState(!initialData);
+  const [challengerId, setChallengerId] = useState('');
+  const [opponentId, setOpponentId] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [syncWarning, setSyncWarning] = useState<string | null>(null);
+
+  useEffect(() => {
+    // If we have initial data, set the default fighters
+    if (initialData?.fighters && initialData.fighters.length >= 2) {
+      setChallengerId(initialData.fighters[0].profile.id.toString());
+      setOpponentId(initialData.fighters[1].profile.id.toString());
+      return;
+    }
+
+    // Only load data on client if we don't have initial data
+    if (!initialData) {
+      loadData();
+    }
+  }, [initialData]);
+
+  async function loadData() {
+    try {
+      setLoading(true);
+
+      const {
+        shouldSyncFighters,
+        getFightersFromFirestore,
+        syncFightersFromRails,
+        getGameDataFromFirestore,
+        syncGameDataFromRails,
+      } = await import('@/lib/fighter-sync');
+
+      // Check if we need to sync from Rails
+      const needsSync = await shouldSyncFighters();
+
+      if (needsSync) {
+        // Syncing data from Rails (first time or >24hrs old)...
+        // Sync both fighters and game data
+        const [fightersSuccess, gameDataSuccess] = await Promise.all([
+          syncFightersFromRails(),
+          syncGameDataFromRails(),
+        ]);
+
+        // Show warning if sync failed but don't block the app
+        if (!fightersSuccess || !gameDataSuccess) {
+          setSyncWarning(
+            'Unable to sync from Rails server. Using cached data from Firestore.'
+          );
+          // Rails sync failed - continuing with Firestore data
+        }
+      }
+
+      // Get everything from Firestore (fast, no Rails calls)
+      const [profilesData, gameDataResponse] = await Promise.all([
+        getFightersFromFirestore(),
+        getGameDataFromFirestore(),
+      ]);
+
+      // Check if we have data in Firestore
+      if (!profilesData || profilesData.length === 0) {
+        setError(
+          'No fighters found in database. Please ensure the Rails server is running and data has been synced at least once.'
+        );
+        return;
+      }
+
+      if (!gameDataResponse) {
+        setError(
+          'No game data found in database. Please ensure the Rails server is running and data has been synced at least once.'
+        );
+        return;
+      }
+
+      setFighters(profilesData);
+      setGameData(gameDataResponse);
+
+      if (profilesData.length >= 2) {
+        setChallengerId(profilesData[0].profile.id.toString());
+        setOpponentId(profilesData[1].profile.id.toString());
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load data');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const handleStartBattle = () => {
+    if (!challengerId || !opponentId) {
+      setError('Please select both fighters');
+      return;
+    }
+    if (challengerId === opponentId) {
+      setError('Cannot battle yourself!');
+      return;
+    }
+    router.push(`/battle?challenger=${challengerId}&opponent=${opponentId}`);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12 min-h-screen h-full">
+        <div className="text-center">
+          <Loader className="animate-spin h-16 w-16 text-blue-600 mx-auto mb-4" />
+          <p className="text-lg text-slate-600 dark:text-slate-400">
+            Loading battle data...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 py-12 px-4 min-h-screen h-full">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 mb-3 sm:mb-4 px-2">
+            <span className="hidden sm:inline">⚔️ </span>TecHub Battles
+            <span className="hidden sm:inline"> ⚔️</span>
+          </h1>
+          <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-400 px-4">
+            Watch GitHub developer cards battle it out!
+          </p>
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div className="mb-6 rounded-xl bg-red-50 border-2 border-red-200 p-4 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300">
+            {error}
+          </div>
+        )}
+
+        {/* Warning */}
+        {syncWarning && !error && (
+          <div className="mb-6 rounded-xl bg-yellow-50 border-2 border-yellow-200 p-4 text-yellow-800 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-300">
+            ⚠️ {syncWarning}
+          </div>
+        )}
+
+        {/* Fighter Selection */}
+        <div className="rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-8 shadow-2xl">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6 flex items-center gap-2">
+            <Swords size={28} />
+            Select Fighters
+          </h2>
+
+          <div className="space-y-6">
+            {/* Challenger */}
+            <div>
+              <label
+                htmlFor="challenger-select"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+              >
+                Challenger
+              </label>
+              <select
+                id="challenger-select"
+                value={challengerId}
+                onChange={(e) => setChallengerId(e.target.value)}
+                aria-label="Select challenger fighter"
+                className="w-full rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-slate-100 focus:border-blue-500 focus:outline-none"
+              >
+                <option value="">Select Challenger...</option>
+                {fighters.map((fighter) => (
+                  <option key={fighter.profile.id} value={fighter.profile.id}>
+                    @{fighter.profile.login} - {fighter.card.archetype} (
+                    {fighter.card.attack}/{fighter.card.defense}/
+                    {fighter.card.speed})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* VS */}
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-orange-500 p-4 text-white font-bold text-2xl shadow-lg">
+                VS
+              </div>
+            </div>
+
+            {/* Opponent */}
+            <div>
+              <label
+                htmlFor="opponent-select"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+              >
+                Opponent
+              </label>
+              <select
+                id="opponent-select"
+                value={opponentId}
+                onChange={(e) => setOpponentId(e.target.value)}
+                aria-label="Select opponent fighter"
+                className="w-full rounded-xl border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-slate-100 focus:border-blue-500 focus:outline-none"
+              >
+                <option value="">Select Opponent...</option>
+                {fighters.map((fighter) => (
+                  <option key={fighter.profile.id} value={fighter.profile.id}>
+                    @{fighter.profile.login} - {fighter.card.archetype} (
+                    {fighter.card.attack}/{fighter.card.defense}/
+                    {fighter.card.speed})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Start Button */}
+            <button
+              onClick={handleStartBattle}
+              disabled={!challengerId || !opponentId}
+              className="w-full inline-flex items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 px-8 py-4 text-white font-bold text-xl shadow-2xl hover:from-red-700 hover:via-orange-700 hover:to-yellow-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Swords size={24} />
+              <span>Start Battle!</span>
+            </button>
+          </div>
+
+          {/* Info */}
+          <div className="mt-6 text-sm text-slate-600 dark:text-slate-400">
+            <p className="font-semibold mb-2">
+              Battle-Ready Profiles: {fighters.length}
+            </p>
+            <p className="text-xs">
+              Battles use type advantages, spirit animal bonuses, and turn-based
+              combat. All simulation happens client-side - completely free! 🎉
+            </p>
+          </div>
+
+          {/* Call to Action */}
+          <div className="mt-6 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-2 border-blue-200 dark:border-blue-800 p-6 text-center">
+            <p className="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+              Want to see your name on the list and start fighting?
+            </p>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+              Join the TecHub community today!
+            </p>
+            <a
+              href="https://techub.life"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-white font-bold text-base shadow-lg hover:from-blue-700 hover:to-purple-700 transition-all"
+            >
+              Sign up at techub.life
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

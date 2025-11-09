@@ -8,7 +8,7 @@ export default function AboutPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-500 to-pink-600 mb-3 sm:mb-4 px-2">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 mb-3 sm:mb-4 px-2">
             <span className="hidden sm:inline">⚔️ </span>About TecHub Battles
             <span className="hidden sm:inline"> ⚔️</span>
           </h1>
@@ -22,8 +22,8 @@ export default function AboutPage() {
           {/* What is it */}
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-8">
             <div className="flex items-center gap-3 mb-4">
-              <Swords className="h-8 w-8 text-blue-600" />
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+              <Swords className="h-8 w-8 text-orange-600" />
+              <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500">
                 What is TecHub Battles?
               </h2>
             </div>
@@ -39,41 +39,41 @@ export default function AboutPage() {
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-8">
             <div className="flex items-center gap-3 mb-4">
               <Zap className="h-8 w-8 text-yellow-600" />
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500">
                 How It Works
               </h2>
             </div>
             <ul className="space-y-3 text-slate-600 dark:text-slate-400">
               <li className="flex items-start gap-3">
-                <span className="text-blue-600 font-bold">1.</span>
+                <span className="text-orange-600 font-bold">1.</span>
                 <span>
                   <strong>Choose Your Fighters:</strong> Select two battle-ready
                   profiles from the TecHub community
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-blue-600 font-bold">2.</span>
+                <span className="text-orange-600 font-bold">2.</span>
                 <span>
                   <strong>Battle Simulation:</strong> Watch as fighters use
                   their unique stats, archetypes, and special moves
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-blue-600 font-bold">3.</span>
+                <span className="text-orange-600 font-bold">3.</span>
                 <span>
                   <strong>Special Moves:</strong> Every 3 turns, fighters
                   unleash powerful special attacks with damage bonuses
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-blue-600 font-bold">4.</span>
+                <span className="text-orange-600 font-bold">4.</span>
                 <span>
                   <strong>Type Advantages:</strong> Archetypes have strengths
                   and weaknesses against each other
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-blue-600 font-bold">5.</span>
+                <span className="text-orange-600 font-bold">5.</span>
                 <span>
                   <strong>Spirit Animals:</strong> Provide stat modifiers that
                   enhance fighter abilities
@@ -86,7 +86,7 @@ export default function AboutPage() {
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-8">
             <div className="flex items-center gap-3 mb-4">
               <Trophy className="h-8 w-8 text-yellow-600" />
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500">
                 Features
               </h2>
             </div>
@@ -142,7 +142,7 @@ export default function AboutPage() {
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
             <div className="flex items-center gap-3 mb-4">
               <Users className="h-8 w-8" />
-              <h2 className="text-2xl font-bold">Part of TecHub</h2>
+              <h2 className="text-2xl font-bold text-white">Part of TecHub</h2>
             </div>
             <p className="mb-6 opacity-90">
               TecHub Battles is part of the TecHub ecosystem - a community

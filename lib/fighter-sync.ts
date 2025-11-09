@@ -11,7 +11,7 @@ import {
 } from 'firebase/firestore';
 import { db } from './firebase';
 import type { Fighter, GameData } from './types';
-import { techubAPI } from './techub-api';
+import { resilientTechubAPI } from './resilient-api';
 
 /**
  * Sync game data from Rails to Firestore
@@ -21,8 +21,8 @@ export async function syncGameDataFromRails(): Promise<boolean> {
   try {
     // Syncing game data from Rails...
 
-    // Fetch game data from Rails
-    const gameData = await techubAPI.getGameData();
+    // Fetch game data from Rails with retry logic
+    const gameData = await resilientTechubAPI.getGameData();
 
     // Save to Firestore
     await setDoc(doc(db, 'game_data', 'current'), {
@@ -48,8 +48,8 @@ export async function syncGameDataFromRails(): Promise<boolean> {
  */
 export async function syncFightersFromRails(): Promise<boolean> {
   try {
-    // Get all fighters from Rails (existing endpoint)
-    const railsFighters = await techubAPI.getBattleReadyProfiles();
+    // Get all fighters from Rails (existing endpoint) with retry logic
+    const railsFighters = await resilientTechubAPI.getBattleReadyProfiles();
 
     if (railsFighters.length === 0) {
       return true; // No fighters to sync

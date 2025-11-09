@@ -1,4 +1,8 @@
 import { NextResponse } from 'next/server';
+import { addCorsHeaders } from '@/lib/cors';
+
+// Force dynamic to prevent timeouts during cold starts
+export const dynamic = 'force-dynamic';
 
 const excuses = [
   'It works on my machine 🤷',
@@ -33,10 +37,10 @@ const excuses = [
   'The cosmic rays flipped a bit',
 ];
 
-export async function GET() {
+export async function GET(request: Request) {
   const randomExcuse = excuses[Math.floor(Math.random() * excuses.length)];
 
-  const response = {
+  const responseData = {
     excuse: randomExcuse,
     confidence: Math.floor(Math.random() * 100) + 1,
     timestamp: new Date().toISOString(),
@@ -46,5 +50,7 @@ export async function GET() {
     willFixIn: `${Math.floor(Math.random() * 10) + 1} sprints`,
   };
 
-  return NextResponse.json(response);
+  const response = NextResponse.json(responseData);
+  const origin = request.headers.get('origin') || undefined;
+  return addCorsHeaders(response, origin);
 }

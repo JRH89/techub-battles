@@ -11,19 +11,10 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import Link from 'next/link';
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  limit,
-  Timestamp,
-} from 'firebase/firestore';
+import { collection, getDocs, where, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { getFightersFromFirestore } from '@/lib/fighter-sync';
 import type { Fighter } from '@/lib/types';
-import type { Metadata } from 'next';
 import {
   generatePersonSchema,
   generateBreadcrumbSchema,

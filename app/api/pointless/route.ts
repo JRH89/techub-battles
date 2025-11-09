@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
+import { addCorsHeaders } from '@/lib/cors';
 
-export async function GET() {
+// Force dynamic to prevent timeouts during cold starts
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: Request) {
   const pointlessEndpoints = [
     {
       url: '/api/pointless/developer-excuse',
@@ -10,5 +14,7 @@ export async function GET() {
     },
   ];
 
-  return NextResponse.json(pointlessEndpoints);
+  const response = NextResponse.json(pointlessEndpoints);
+  const origin = request.headers.get('origin') || undefined;
+  return addCorsHeaders(response, origin);
 }

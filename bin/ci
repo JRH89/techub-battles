@@ -45,35 +45,36 @@ fi
 
 print_status "Installing dependencies..."
 if command_exists npm; then
-    npm ci
+    npm ci >/dev/null 2>&1
 elif command_exists yarn; then
-    yarn install --frozen-lockfile
+    yarn install --frozen-lockfile >/dev/null 2>&1
 elif command_exists pnpm; then
-    pnpm install --frozen-lockfile
+    pnpm install --frozen-lockfile >/dev/null 2>&1
 else
     print_error "No package manager found (npm, yarn, or pnpm)"
     exit 1
 fi
+print_success "Dependencies installed"
 
 echo ""
 print_status "Running type checking..."
-npm run type-check
+npm run type-check >/dev/null 2>&1
 print_success "Type checking passed"
 
 echo ""
 print_status "Running ESLint with auto-fix..."
-npm run lint -- --fix
+npm run lint -- --fix >/dev/null 2>&1
 print_success "ESLint auto-fix completed"
 
 echo ""
 print_status "Running ESLint check..."
-npm run lint
+npm run lint >/dev/null 2>&1
 print_success "Linting passed"
 
 # Check if Prettier is available, if not add it
 if ! command_exists prettier && ! npm list prettier >/dev/null 2>&1; then
     print_warning "Prettier not found. Installing..."
-    npm install --save-dev prettier
+    npm install --save-dev prettier >/dev/null 2>&1
     echo "{
   \"semi\": true,
   \"trailingComma\": \"es5\",
@@ -95,9 +96,9 @@ echo ""
 print_status "Auto-fixing code formatting with Prettier..."
 if [ -f ".prettierrc" ] || command_exists prettier; then
     if command_exists prettier; then
-        prettier --write .
+        prettier --write . >/dev/null 2>&1
     else
-        npx prettier --write .
+        npx prettier --write . >/dev/null 2>&1
     fi
     print_success "Code formatting auto-fixed"
 else
@@ -108,9 +109,9 @@ echo ""
 print_status "Running Prettier format check..."
 if [ -f ".prettierrc" ] || command_exists prettier; then
     if command_exists prettier; then
-        prettier --check .
+        prettier --check . >/dev/null 2>&1
     else
-        npx prettier --check .
+        npx prettier --check . >/dev/null 2>&1
     fi
     print_success "Code formatting check passed"
 else
@@ -119,27 +120,27 @@ fi
 
 echo ""
 print_status "Running tests..."
-npm run test
+npm run test >/dev/null 2>&1
 print_success "All tests passed"
 
 echo ""
 print_status "Running tests with coverage..."
-npm run test:coverage
+npm run test:coverage >/dev/null 2>&1
 print_success "Coverage report generated"
 
 echo ""
 print_status "Building the application..."
-npm run build
+npm run build >/dev/null 2>&1
 print_success "Build completed successfully"
 
 echo ""
 print_status "Checking for security vulnerabilities..."
 if command_exists npm; then
-    npm audit --audit-level moderate
+    npm audit --audit-level moderate >/dev/null 2>&1
 elif command_exists yarn; then
-    yarn audit --level moderate
+    yarn audit --level moderate >/dev/null 2>&1
 elif command_exists pnpm; then
-    pnpm audit --audit-level moderate
+    pnpm audit --audit-level moderate >/dev/null 2>&1
 fi
 print_success "Security audit completed"
 

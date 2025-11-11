@@ -1,16 +1,24 @@
 import { getDocs, collection, query, limit } from 'firebase/firestore';
 import { db } from './firebase';
 import type { Fighter, GameData } from './types';
+import { syncFightersFromRails, syncGameDataFromRails } from './fighter-sync';
 
 /**
  * Server-side function to get fighters and game data for ISR
- * This runs on the server and provides cached data to prevent cold starts
+ * This runs on the server and syncs from Rails before reading from Firestore
  */
 export async function getFightersAndGameData(): Promise<{
   fighters: Fighter[];
   gameData: GameData;
 } | null> {
   try {
+    // Sync from Rails first to get latest data
+    console.log('Syncing data from Rails API...');
+    await Promise.all([
+      syncFightersFromRails(),
+      syncGameDataFromRails(),
+    ]);
+
     // Get game data from Firestore
     const gameDataSnapshot = await getDocs(
       query(collection(db, 'game_data'), limit(1))
@@ -42,6 +50,8 @@ export async function getFightersAndGameData(): Promise<{
       profile: doc.data().profile,
       card: doc.data().card,
     }));
+
+    console.log(`Loaded ${fighters.length} fighters from Firestore`);
 
     return {
       fighters,

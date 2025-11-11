@@ -3,8 +3,8 @@ import { Swords } from 'lucide-react';
 import HomeClient from './HomeClient';
 import { getFightersAndGameData } from '@/lib/fighter-sync-server';
 
-// Revalidate every 5 minutes to prevent cold starts
-export const revalidate = 300;
+// Revalidate on every request to always get fresh data
+export const revalidate = 0;
 
 function LoadingFallback() {
   return (

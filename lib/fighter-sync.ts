@@ -51,6 +51,8 @@ export async function syncFightersFromRails(): Promise<boolean> {
     // Get all fighters from Rails (existing endpoint) with retry logic
     const railsFighters = await resilientTechubAPI.getBattleReadyProfiles();
 
+    console.log(`Syncing ${railsFighters.length} fighters from API`);
+
     if (railsFighters.length === 0) {
       return true; // No fighters to sync
     }
@@ -63,6 +65,8 @@ export async function syncFightersFromRails(): Promise<boolean> {
     for (const fighter of railsFighters) {
       const fighterId = fighter.profile.login;
       const fighterDoc = doc(fightersRef, fighterId);
+      
+      console.log(`Adding fighter to batch: ${fighterId}`);
       
       batch.set(
         fighterDoc,
@@ -78,6 +82,8 @@ export async function syncFightersFromRails(): Promise<boolean> {
 
     // Commit all updates
     await batch.commit();
+    console.log(`Successfully synced ${railsFighters.length} fighters to Firestore`);
+    
     // Update sync timestamp
     await updateLastSyncTimestamp();
 

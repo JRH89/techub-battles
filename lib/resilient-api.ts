@@ -1,7 +1,9 @@
 import axios from 'axios';
 import type { GameData, Fighter } from './types';
 
-const API_BASE_URL = 'https://techub.life/api/v1';
+const API_BASE_URL = process.env.NEXT_PUBLIC_TECHUB_API || 'https://techub.life/api/v1';
+
+console.log(`TecHub API Base URL: ${API_BASE_URL}`);
 
 // Create axios instance with retry and timeout configuration
 const api = axios.create({

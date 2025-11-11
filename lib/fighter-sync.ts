@@ -43,8 +43,8 @@ export async function syncGameDataFromRails(): Promise<boolean> {
 }
 
 /**
- * Sync fighters from Rails to Firestore (timestamp-based incremental sync)
- * Uses existing API and compares timestamps to only update changed fighters
+ * Sync fighters from Rails to Firestore
+ * Fetches all battle-ready profiles and updates Firestore
  */
 export async function syncFightersFromRails(): Promise<boolean> {
   try {
@@ -55,59 +55,31 @@ export async function syncFightersFromRails(): Promise<boolean> {
       return true; // No fighters to sync
     }
 
-    // Get existing fighters from Firestore to compare
-    const fightersRef = collection(db, 'fighters');
-    const existingFightersSnapshot = await getDocs(fightersRef);
-
-    // Create map of existing fighters for quick lookup
-    const existingFighters = new Map();
-    existingFightersSnapshot.forEach((doc) => {
-      const data = doc.data();
-      existingFighters.set(doc.id, {
-        last_updated: data.last_updated?.toDate(),
-        data: data,
-      });
-    });
-
     // Batch operations for efficiency
+    const fightersRef = collection(db, 'fighters');
     const batch = writeBatch(db);
-    let updatesCount = 0;
 
+    // Update all fighters from the API
     for (const fighter of railsFighters) {
       const fighterId = fighter.profile.login;
-      const existingFighter = existingFighters.get(fighterId);
-
-      // Parse updated_at from Rails fighter (assuming it's included)
-      const railsUpdatedAt = new Date(fighter.profile.updated_at || Date.now());
-
-      // Check if fighter is new or updated
-      const needsUpdate =
-        !existingFighter ||
-        !existingFighter.last_updated ||
-        railsUpdatedAt > existingFighter.last_updated;
-
-      if (needsUpdate) {
-        const fighterDoc = doc(fightersRef, fighterId);
-        batch.set(
-          fighterDoc,
-          {
-            profile: fighter.profile,
-            card: fighter.card,
-            last_synced: new Date(),
-            last_updated: railsUpdatedAt,
-          },
-          { merge: true }
-        );
-        updatesCount++;
-      }
+      const fighterDoc = doc(fightersRef, fighterId);
+      
+      batch.set(
+        fighterDoc,
+        {
+          profile: fighter.profile,
+          card: fighter.card,
+          last_synced: new Date(),
+          last_updated: new Date(fighter.profile.updated_at || Date.now()),
+        },
+        { merge: true }
+      );
     }
 
-    // Only execute batch if there are updates
-    if (updatesCount > 0) {
-      await batch.commit();
-      // Update sync timestamp
-      await updateLastSyncTimestamp();
-    }
+    // Commit all updates
+    await batch.commit();
+    // Update sync timestamp
+    await updateLastSyncTimestamp();
 
     return true;
   } catch (error) {

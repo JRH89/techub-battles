@@ -243,7 +243,25 @@ export default function HomeClient({ initialData }: HomeClientProps) {
             Archetypes & Spirit Animals
           </h2>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-            Every fighter gets an archetype and a spirit animal that shape their style in battle. Here are some examples of how they interact:
+            Every fighter gets an archetype and a spirit animal from TecHub that shape their style in battle. These come from the same game data used on{' '}
+            <a
+              href="https://techub.life/archetypes"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-dotted underline-offset-2"
+            >
+              archetypes
+            </a>{' '}
+            and{' '}
+            <a
+              href="https://techub.life/spirit-animals"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-dotted underline-offset-2"
+            >
+              spirit animals
+            </a>
+            , and the battle engine uses that data directly.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-600 dark:text-slate-400">
             <div>
@@ -252,19 +270,40 @@ export default function HomeClient({ initialData }: HomeClientProps) {
               </h3>
               <ul className="list-disc list-inside space-y-1">
                 <li>
-                  <span className="font-semibold">The Hero</span> – balanced offense/defense, strong against glass-cannon types, weaker against tricky or evasive styles.
+                  <span className="font-semibold">The Innocent</span> – optimistic beginner’s mind; values simplicity and sincerity.
                 </li>
                 <li>
-                  <span className="font-semibold">The Magician</span> – bursty, effect-heavy attacks; can overpower defensive fighters but may be vulnerable to fast pressure.
+                  <span className="font-semibold">The Everyman</span> – grounded, relatable collaborator who keeps teams steady.
                 </li>
                 <li>
-                  <span className="font-semibold">The Rebel</span> – high-risk, high-reward; excels at surprise damage and comebacks but can be fragile.
+                  <span className="font-semibold">The Hero</span> – steps up under pressure; ships ambitious work against odds and gets a little tougher when their HP drops.
                 </li>
                 <li>
-                  <span className="font-semibold">The Lover</span> – more sustain and support-style passives; harder to knock out but less explosive.
+                  <span className="font-semibold">The Outlaw</span> – breaks conventions to unlock bold new approaches.
                 </li>
                 <li>
-                  <span className="font-semibold">The Explorer</span> – adaptable all-rounder, with flexible matchups and bonus effects in longer fights.
+                  <span className="font-semibold">The Explorer</span> – curious pathfinder; thrives on discovery and breadth.
+                </li>
+                <li>
+                  <span className="font-semibold">The Creator</span> – imagination and craft; turns ideas into polished systems.
+                </li>
+                <li>
+                  <span className="font-semibold">The Ruler</span> – sets direction and standards; creates clarity for others and gains a bonus while staying healthy.
+                </li>
+                <li>
+                  <span className="font-semibold">The Magician</span> – translates complexity into seamless experiences; hits extra hard when they have type advantage.
+                </li>
+                <li>
+                  <span className="font-semibold">The Lover</span> – designs for people first; warmth, care, and resonance, with damage ramping up as HP drops.
+                </li>
+                <li>
+                  <span className="font-semibold">The Caregiver</span> – stability and support; invests in docs, tests, and teams and has a small regeneration effect each turn.
+                </li>
+                <li>
+                  <span className="font-semibold">The Jester</span> – playful energy; energizes teams and occasionally dodges incoming attacks entirely.
+                </li>
+                <li>
+                  <span className="font-semibold">The Sage</span> – seeks truth and signal; mentors with hard-won insight.
                 </li>
               </ul>
             </div>
@@ -274,20 +313,44 @@ export default function HomeClient({ initialData }: HomeClientProps) {
               </h3>
               <ul className="list-disc list-inside space-y-1">
                 <li>
-                  <span className="font-semibold">Jester</span> – dodge-focused, occasionally completely avoids damage.
+                  <span className="font-semibold">Danger Noodle</span> – playful serpent spirit; quick, clever, and a little chaotic.
                 </li>
                 <li>
-                  <span className="font-semibold">Caregiver</span> – small HP regeneration over time, great in drawn-out battles.
+                  <span className="font-semibold">Wedge-tailed Eagle</span> – high vantage and precision; surveys systems end-to-end.
                 </li>
                 <li>
-                  <span className="font-semibold">Predator</span> – higher burst damage when the opponent is low.
+                  <span className="font-semibold">Platypus</span> – unorthodox but effective; thrives across disciplines.
                 </li>
                 <li>
-                  <span className="font-semibold">Guardian</span> – more consistent defense and resistance to big hits.
+                  <span className="font-semibold">Kangaroo</span> – powerful bursts; leaps milestones with momentum and favors speedy, aggressive play.
+                </li>
+                <li>
+                  <span className="font-semibold">Dingo</span> – adaptable problem-solver; strong in a pack or solo.
+                </li>
+                <li>
+                  <span className="font-semibold">Saltwater Crocodile</span> – patient strategist; strikes decisively when timing is right.
+                </li>
+                <li>
+                  <span className="font-semibold">Redback Spider</span> – elegant webs; builds resilient networks and edge cases.
+                </li>
+                <li>
+                  <span className="font-semibold">Cassowary</span> – bold guardian; protects boundaries and performance budgets.
+                </li>
+                <li>
+                  <span className="font-semibold">Koala</span> – calm focus; steady craftsmanship and reliability for more tanky, sustained fights.
+                </li>
+                <li>
+                  <span className="font-semibold">Quokka</span> – delight-forward; lifts team morale and UX polish, great for playful, feel-good profiles.
+                </li>
+                <li>
+                  <span className="font-semibold">Great White Shark</span> – relentless finisher; excels at closing out opponents on critical paths.
+                </li>
+                <li>
+                  <span className="font-semibold">Tasmanian Devil</span> – scrappy executor; unblocks gnarly issues fast.
                 </li>
               </ul>
               <p className="text-xs text-slate-500 dark:text-slate-500 mt-2">
-                Different combinations of archetype and spirit animal create unique matchups with subtle strengths and weaknesses.
+                Different combinations of archetype and spirit animal use TecHub&apos;s real type chart and stat modifiers to create unique matchups, with subtle strengths and weaknesses that mirror how these profiles are modeled on techub.life.
               </p>
             </div>
           </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Swords, Loader } from 'lucide-react';
+import { Swords, Loader, Trophy, Users, Shield, Zap, Info } from 'lucide-react';
 import type { Fighter, GameData } from '@/lib/types';
 
 interface HomeClientProps {
@@ -134,16 +134,48 @@ export default function HomeClient({ initialData }: HomeClientProps) {
 
   return (
     <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 py-12 px-4 min-h-screen h-full">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
+      <div className="max-w-5xl mx-auto">
+        {/* Header / Hero */}
         <div className="text-center mb-8 sm:mb-12">
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 mb-3 sm:mb-4 px-2">
             <span className="hidden sm:inline">⚔️ </span>TecHub Battles
             <span className="hidden sm:inline"> ⚔️</span>
           </h1>
-          <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-400 px-4">
-            Watch GitHub developer cards battle it out!
+          <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-400 px-4 max-w-3xl mx-auto">
+            Turn your TecHub profile into a battle-ready fighter card and watch GitHub-powered devs clash in fully simulated, turn-based battles.
           </p>
+        </div>
+
+        {/* Hero CTA */}
+        <div className="mb-10">
+          <div className="rounded-2xl border-2 border-blue-200 dark:border-blue-800 bg-white/80 dark:bg-slate-900/80 shadow-xl p-6 sm:p-8 flex flex-col gap-6">
+            <div className="flex-1">
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+                <Users className="h-6 w-6 text-blue-600" />
+                Join TecHub to unlock your fighter card
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mb-2">
+                Your TecHub profile is where your archetype, spirit animal, and battle stats are created. Stats are generated from your public GitHub activity — followers, stars, active repos, commits, gists, and pinned/featured projects.
+              </p>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-500">
+                Having detailed READMEs about you and your projects helps the AI generate better summaries, images, and abilities for your fighter.
+              </p>
+            </div>
+            <div className="flex flex-col items-stretch gap-3 w-full">
+              <a
+                href="https://techub.life"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-white font-bold text-base shadow-lg hover:from-blue-700 hover:to-purple-700 transition-all"
+              >
+                <Users className="h-5 w-5" />
+                Sign up at techub.life
+              </a>
+              <p className="text-[11px] text-slate-500 dark:text-slate-500 text-center">
+                Connect with the lightest possible GitHub app permissions — public profile and featured repos only.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Error */}
@@ -160,7 +192,180 @@ export default function HomeClient({ initialData }: HomeClientProps) {
           </div>
         )}
 
-        {/* Fighter Selection */}
+        {/* How stats and battles work */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+          <div className="rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 flex flex-col gap-3">
+            <div className="flex items-center gap-2 mb-1">
+              <Shield className="h-5 w-5 text-emerald-600" />
+              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                How your stats are generated
+              </h2>
+            </div>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Each TecHub fighter card is built from your TecHub profile, which pulls from your public GitHub activity:
+            </p>
+            <ul className="text-sm text-slate-600 dark:text-slate-400 list-disc list-inside space-y-1">
+              <li>Followers and stars</li>
+              <li>Number of public, active repos and recent commits</li>
+              <li>Public gists and pinned/featured repos</li>
+              <li>Quality READMEs and profile details</li>
+            </ul>
+            <p className="text-xs text-slate-500 dark:text-slate-500">
+              Being active on GitHub with multiple active repos, recent commits, followers, and stars will generally boost your stats.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 flex flex-col gap-3">
+            <div className="flex items-center gap-2 mb-1">
+              <Zap className="h-5 w-5 text-yellow-600" />
+              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                Turn-based, auto-simulated battles
+              </h2>
+            </div>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Battles are fully simulated in your browser, using a turn-based engine:
+            </p>
+            <ul className="text-sm text-slate-600 dark:text-slate-400 list-disc list-inside space-y-1">
+              <li>Attack, Defense, and Speed decide who hits how hard, and who goes first.</li>
+              <li>Archetypes and spirit animals add type advantages and passive effects.</li>
+              <li>Fighters charge up special moves and unleash big attacks every few turns.</li>
+            </ul>
+            <p className="text-xs text-slate-500 dark:text-slate-500">
+              You can adjust battle speed from 0.5x to 4x while watching — slow and cinematic or fast-forwarded chaos.
+            </p>
+          </div>
+        </div>
+
+        {/* Archetypes & Spirit Animals */}
+        <div className="rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 mb-10">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
+            <Swords className="h-5 w-5 text-orange-600" />
+            Archetypes & Spirit Animals
+          </h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+            Every fighter gets an archetype and a spirit animal that shape their style in battle. Here are some examples of how they interact:
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-600 dark:text-slate-400">
+            <div>
+              <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">
+                Archetypes
+              </h3>
+              <ul className="list-disc list-inside space-y-1">
+                <li>
+                  <span className="font-semibold">The Hero</span> – balanced offense/defense, strong against glass-cannon types, weaker against tricky or evasive styles.
+                </li>
+                <li>
+                  <span className="font-semibold">The Magician</span> – bursty, effect-heavy attacks; can overpower defensive fighters but may be vulnerable to fast pressure.
+                </li>
+                <li>
+                  <span className="font-semibold">The Rebel</span> – high-risk, high-reward; excels at surprise damage and comebacks but can be fragile.
+                </li>
+                <li>
+                  <span className="font-semibold">The Lover</span> – more sustain and support-style passives; harder to knock out but less explosive.
+                </li>
+                <li>
+                  <span className="font-semibold">The Explorer</span> – adaptable all-rounder, with flexible matchups and bonus effects in longer fights.
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">
+                Spirit animals
+              </h3>
+              <ul className="list-disc list-inside space-y-1">
+                <li>
+                  <span className="font-semibold">Jester</span> – dodge-focused, occasionally completely avoids damage.
+                </li>
+                <li>
+                  <span className="font-semibold">Caregiver</span> – small HP regeneration over time, great in drawn-out battles.
+                </li>
+                <li>
+                  <span className="font-semibold">Predator</span> – higher burst damage when the opponent is low.
+                </li>
+                <li>
+                  <span className="font-semibold">Guardian</span> – more consistent defense and resistance to big hits.
+                </li>
+              </ul>
+              <p className="text-xs text-slate-500 dark:text-slate-500 mt-2">
+                Different combinations of archetype and spirit animal create unique matchups with subtle strengths and weaknesses.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Leaderboard & Directory */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+          <div className="rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 flex flex-col gap-2">
+            <div className="flex items-center gap-2 mb-1">
+              <Trophy className="h-5 w-5 text-yellow-600" />
+              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                Leaderboard
+              </h2>
+            </div>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              The leaderboard shows which TecHub fighters are winning the most battles. Track overall performance, discover top players, and see how your card stacks up.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 flex flex-col gap-2">
+            <div className="flex items-center gap-2 mb-1">
+              <Users className="h-5 w-5 text-purple-600" />
+              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                Fighter directory
+              </h2>
+            </div>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Browse all battle-ready TecHub profiles, discover new developers, and pick interesting matchups for your next fight.
+            </p>
+          </div>
+        </div>
+
+        {/* FAQ / Privacy */}
+        <div className="rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 mb-10">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
+            <Info className="h-5 w-5 text-blue-600" />
+            FAQ & privacy
+          </h2>
+          <div className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+            <div>
+              <p className="font-semibold text-slate-900 dark:text-slate-100">
+                What data do you use?
+              </p>
+              <p>
+                We only look at <span className="font-semibold">public GitHub profiles</span> and <span className="font-semibold">public repos</span> that you feature or pin in TecHub. No private code is scanned.
+              </p>
+            </div>
+            <div>
+              <p className="font-semibold text-slate-900 dark:text-slate-100">
+                What GitHub permissions are required?
+              </p>
+              <p>
+                The GitHub app uses the lightest possible access — basic profile and repo metadata needed to compute stats. We don&apos;t request email access or write permissions.
+              </p>
+            </div>
+            <div>
+              <p className="font-semibold text-slate-900 dark:text-slate-100">
+                Where are battles simulated?
+              </p>
+              <p>
+                All battle simulations run directly in your browser. That means no per-battle server cost — it&apos;s completely free to watch as many battles as you like.
+              </p>
+            </div>
+            <div>
+              <p className="font-semibold text-slate-900 dark:text-slate-100">
+                How can I get better results for my card?
+              </p>
+              <ul className="list-disc list-inside mt-1 space-y-1">
+                <li>Fill out your TecHub profile with a clear bio and skills.</li>
+                <li>Have a detailed README on your GitHub profile.</li>
+                <li>Pin / feature repos with good READMEs and recent commits.</li>
+                <li>Stay active on GitHub with multiple projects, commits, stars, and followers.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Fighter Selection (bottom of page) */}
         <div className="rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-8 shadow-2xl">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6 flex items-center gap-2">
             <Swords size={28} />

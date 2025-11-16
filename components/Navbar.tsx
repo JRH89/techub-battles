@@ -33,7 +33,7 @@ export default function Navbar() {
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center gap-6">
             <Link
-              href="/"
+              href="/battle"
               className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition"
             >
               <Swords className="h-4 w-4" />
@@ -95,7 +95,7 @@ export default function Navbar() {
           <div className="md:hidden py-4 border-t border-slate-200 dark:border-slate-800">
             <div className="flex flex-col space-y-3">
               <Link
-                href="/"
+                href="/battle"
                 className="flex items-center gap-3 px-4 py-3 text-base font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
                 onClick={closeMobileMenu}
               >
